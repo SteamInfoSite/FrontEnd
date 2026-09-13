@@ -1,0 +1,232 @@
+* {
+  box-sizing: border-box;
+}
+
+.board-page {
+  min-height: 100vh;
+
+  display: flex;
+
+  background: white;
+}
+
+/* =========================
+   Main Area
+========================= */
+
+.board-main-area {
+  flex: 1;
+
+  min-width: 0;
+  height: 100vh;
+
+  overflow-y: auto;
+}
+
+/* =========================
+   Board Content
+========================= */
+
+.board-content {
+  min-height: calc(100vh - 165px);
+
+  padding: 0 15px 30px;
+
+  background: white;
+}
+
+/* =========================
+   Board Top
+========================= */
+
+.board-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px 15px 12px;
+}
+
+.board-top h1 {
+  margin: 0;
+
+  color: black;
+
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.board-write-button {
+  width: 80px;
+  height: 42px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #8b45f5;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.board-write-button:hover {
+  background: #7c3aed;
+
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Board Table
+========================= */
+
+.board-table {
+  width: 100%;
+
+  border-top: 1px solid #bdbdbd;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+.board-table-header,
+.board-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    55%
+    18%
+    9%
+    9%
+    9%;
+
+  align-items: center;
+}
+
+.board-table-header {
+  height: 50px;
+
+  border-bottom: 1px solid #bdbdbd;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.board-row {
+  min-height: 46px;
+
+  border: none;
+  border-bottom: 1px solid #d3d3d3;
+
+  background: white;
+
+  color: black;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  text-align: center;
+}
+
+.board-row:last-child {
+  border-bottom: none;
+}
+
+.board-row:hover {
+  background: #f4f4f4;
+}
+
+/* =========================
+   Board Columns
+========================= */
+
+.board-title-column {
+  padding: 0 16px;
+
+  text-align: center;
+}
+
+.board-post-title {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-post-title-text {
+  width: 100%;
+
+  text-align: center;
+}
+
+.board-pin {
+  position: absolute;
+
+  left: 16px;
+
+  font-size: 18px;
+}
+
+/* =========================
+   Pagination
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.page-button {
+  min-width: 24px;
+  height: 24px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: black;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.page-button:hover {
+  background: #e6d7ff;
+}
+
+.page-button.active {
+  background: #b784ff;
+
+  color: white;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1000px) {
+  .board-table {
+    overflow-x: auto;
+  }
+
+  .board-table-header,
+  .board-row {
+    min-width: 850px;
+  }
+}

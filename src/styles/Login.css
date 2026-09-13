@@ -1,0 +1,224 @@
+* {
+  box-sizing: border-box;
+}
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+
+  background: rgba(191, 138, 255, 0.7);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding-top: 45px;
+}
+
+/* =========================
+   Logo
+========================= */
+
+.login-logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.login-logo-area img {
+  width: 75px;
+  height: 75px;
+
+  object-fit: contain;
+}
+
+.login-logo-area h1 {
+  margin: 5px 0 0;
+
+  color: #d9d9d9;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* =========================
+   Login Box
+========================= */
+
+.login-box {
+  width: 480px;
+  min-height: 480px;
+
+  background: #ffffff;
+
+  padding: 42px 50px 55px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* 제목 */
+
+.login-box h2 {
+  margin: 0 0 50px;
+
+  text-align: center;
+
+  color: #b452ff;
+
+  font-size: 28px;
+  font-weight: 300;
+}
+
+/* =========================
+   Input
+========================= */
+
+.login-input-group {
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 18px;
+}
+
+.login-input-group label {
+  margin-bottom: 5px;
+
+  color: #222222;
+
+  font-size: 12px;
+}
+
+.login-input-group input {
+  width: 100%;
+  height: 46px;
+
+  border: 1px solid #9a9a9a;
+
+  background: #ffffff;
+
+  padding: 0 12px;
+
+  font-size: 16px;
+
+  outline: none;
+}
+
+.login-input-group input:focus {
+  border-color: #b452ff;
+}
+
+/* =========================
+   Remember me
+========================= */
+
+.remember-area {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+  cursor: pointer;
+}
+
+.remember-area input {
+  appearance: none;
+
+  width: 13px;
+  height: 13px;
+
+  margin: 0;
+
+  background: #9a9a9a;
+
+  cursor: pointer;
+}
+
+.remember-area input:checked {
+  background: #7c3aed;
+
+  position: relative;
+}
+
+.remember-area input:checked::after {
+  content: "✓";
+
+  position: absolute;
+
+  left: 2px;
+  top: -3px;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+.remember-area span {
+  color: #111111;
+
+  font-size: 11px;
+}
+
+/* =========================
+   Steam Login Button
+========================= */
+
+.steam-login-button {
+  width: 100%;
+  height: 66px;
+
+  margin-top: 52px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    180deg,
+    #091a44 50%,
+    #1383b4 100%
+  );
+
+  color: white;
+
+  font-size: 22px;
+  font-weight: 400;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.steam-login-button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.steam-login-button:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 600px) {
+  .login-page {
+    padding: 30px 20px;
+  }
+
+  .login-box {
+    width: 100%;
+
+    padding: 35px 30px 45px;
+  }
+
+  .login-box h2 {
+    font-size: 23px;
+  }
+}
