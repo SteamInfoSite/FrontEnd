@@ -87,6 +87,8 @@
 }
 
 .post-detail-body p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   margin: 0;
 
   color: black;
@@ -231,6 +233,7 @@
 ========================= */
 
 .comment-form {
+  position: relative;
   padding: 15px;
 
   border-top: 2px solid #8b45f5;
@@ -301,4 +304,50 @@
       1fr
       120px;
   }
+}
+
+.comment-nickname-input {
+  display: block;
+  width: 180px;
+  height: 32px;
+  position: absolute;
+  top: -39px;
+  right: 15px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid #d3d3d3;
+  font-size: 13px;
+}
+
+.comment-nickname-input:focus {
+  outline: 2px solid #8b45f5;
+  outline-offset: 1px;
+}
+
+/* 서식이 있는 게시글 본문 */
+.post-rich-content {
+  color: #222222;
+  font-family: "Malgun Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.post-rich-content p {
+  font: inherit;
+  color: inherit;
+}
+
+.post-rich-content a {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+
+.post-rich-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0;
+  border-radius: 6px;
 }

@@ -1,4 +1,5 @@
 import { mockBoardDetails } from "../mocks/boardDetailMockData";
+import { getCommentCount } from "../mocks/boardCommentMock";
 
 function BoardTable({ posts = [], onPostClick }) {
   return (
@@ -42,7 +43,7 @@ function BoardTable({ posts = [], onPostClick }) {
               <span className="board-post-title-text">
                 [{post.category}] {post.title}
                 {" "}
-                [{mockBoardDetails.find((detail) => detail.id === post.id)?.comments.length ?? 0}]
+                [{getCommentCount(post.id, mockBoardDetails.find((detail) => detail.id === post.id)?.comments || [])}]
             </span>
             </div>
 

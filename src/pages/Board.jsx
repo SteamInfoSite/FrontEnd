@@ -8,7 +8,9 @@ import Pagination from "../components/Pagination";
 
 import { mockBoardPosts } from "../mocks/boardMockData";
 
-import { getLikeDates } from "../mocks/boardLikeStorage";
+import { getLikeDates } from "../mocks/boardLikeMock";
+import { getCreatedPosts } from "../mocks/boardPostMock";
+import { getViewCount } from "../mocks/boardViewMock";
 
 import "../styles/Board.css";
 
@@ -18,6 +20,11 @@ function Board() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = 1;
+  const posts = [
+    ...mockBoardPosts.filter((post) => post.pinned),
+    ...getCreatedPosts(),
+    ...mockBoardPosts.filter((post) => !post.pinned),
+  ];
 
   const handlePostClick = (post) => {
     // 선택한 게시글의 상세 페이지로 이동
@@ -25,8 +32,7 @@ function Board() {
   };
 
   const handleWriteClick = () => {
-    // 향후 게시글 작성 페이지로 이동 처리 구역
-    console.log("게시글 작성");
+    navigate("/board/write");
   };
 
   const handlePageChange = (page) => {
@@ -58,8 +64,9 @@ function Board() {
           </div>
 
           <BoardTable
-            posts={mockBoardPosts.map((post) => ({
+            posts={posts.map((post) => ({
               ...post,
+              views: getViewCount(post.id, post.views),
               likes: post.likes + getLikeDates(post.id).length,
             }))}
             onPostClick={handlePostClick}
