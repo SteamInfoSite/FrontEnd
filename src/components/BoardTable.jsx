@@ -1,3 +1,5 @@
+import { mockBoardDetails } from "../mocks/boardDetailMockData";
+
 function BoardTable({ posts = [], onPostClick }) {
   return (
     <div className="board-table">
@@ -39,7 +41,9 @@ function BoardTable({ posts = [], onPostClick }) {
 
               <span className="board-post-title-text">
                 [{post.category}] {post.title}
-              </span>
+                {" "}
+                [{mockBoardDetails.find((detail) => detail.id === post.id)?.comments.length ?? 0}]
+            </span>
             </div>
 
             <div className="board-nickname-column">

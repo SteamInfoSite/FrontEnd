@@ -8,6 +8,8 @@ import Pagination from "../components/Pagination";
 
 import { mockBoardPosts } from "../mocks/boardMockData";
 
+import { getLikeDates } from "../mocks/boardLikeStorage";
+
 import "../styles/Board.css";
 
 function Board() {
@@ -56,7 +58,10 @@ function Board() {
           </div>
 
           <BoardTable
-            posts={mockBoardPosts}
+            posts={mockBoardPosts.map((post) => ({
+              ...post,
+              likes: post.likes + getLikeDates(post.id).length,
+            }))}
             onPostClick={handlePostClick}
           />
 

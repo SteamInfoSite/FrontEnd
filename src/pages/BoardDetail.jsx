@@ -9,6 +9,8 @@ import CommentForm from "../components/CommentForm";
 import { mockBoardPosts } from "../mocks/boardMockData";
 import { mockBoardDetails } from "../mocks/boardDetailMockData";
 
+import { getLikeDates, addDailyLike } from "../mocks/boardLikeStorage";
+
 import "../styles/BoardDetail.css";
 
 function BoardDetail() {
@@ -26,9 +28,22 @@ function BoardDetail() {
     detail?.comments || []
   );
 
+  const [likeMessage, setLikeMessage] = useState({ postId: null, text: "" });
+  const likeCount = (post?.likes || 0) + getLikeDates(id).length;
+
   const handleLikeClick = () => {
-    // 향후 Backend 추천 API 요청 처리 구역
-    console.log("게시글 추천:", id);
+    try {
+      const added = addDailyLike(id);
+      setLikeMessage({
+        postId: id,
+        text: added ? "추천했습니다." : "이 게시글은 오늘 이미 추천했습니다.",
+      });
+    } catch {
+      setLikeMessage({
+        postId: id,
+        text: "추천을 저장하지 못했습니다. 브라우저 저장소 설정을 확인해 주세요.",
+      });
+    }
   };
 
   const handleCommentSubmit = (content) => {
@@ -96,12 +111,20 @@ function BoardDetail() {
                 {detail.content}
               </p>
 
-              <button
-                className="like-button"
-                onClick={handleLikeClick}
-              >
-                ⭐
-              </button>
+              <div className="like-area">
+                <button
+                  type="button"
+                  className="like-button"
+                  onClick={handleLikeClick}
+                  aria-label="게시글 추천, 하루 한 번 가능"
+                >
+                  <span aria-hidden="true">⭐</span>
+                </button>
+                <span className="like-label">추천</span>
+                <span className="like-message" role="status">
+                  {likeMessage.postId === id ? likeMessage.text : ""}
+                </span>
+              </div>
             </div>
 
             <div className="post-detail-bottom">
@@ -110,7 +133,7 @@ function BoardDetail() {
               </span>
 
               <span>
-                추천 {post.likes}
+                추천 {likeCount}
               </span>
             </div>
           </section>

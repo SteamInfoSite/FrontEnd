@@ -96,11 +96,31 @@
   line-height: 1.6;
 }
 
+/* 추천 버튼과 안내 문구 */
+.like-area {
+  margin: auto auto 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.like-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.like-message {
+  min-height: 18px;
+  color: #555555;
+  font-size: 13px;
+  text-align: center;
+}
 .like-button {
   width: 48px;
   height: 48px;
 
-  margin: auto auto 10px;
+  margin: 0;
 
   border: none;
   border-radius: 50%;
