@@ -3,6 +3,7 @@ function CommentList({ comments = [] }) {
     <div className="comment-list">
       {comments.map((comment) => (
         <div
+          id={`comment_item_${comment.id}`}
           key={comment.id}
           className="comment-item"
         >

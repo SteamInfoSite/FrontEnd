@@ -22,6 +22,8 @@ import discountIcon from "../assets/discount0.png";
 import genreIcon from "../assets/GenreIcon.svg";
 import scheduleIcon from "../assets/ScheduleIcon.svg";
 
+
+
 function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,12 +31,12 @@ function Sidebar() {
   const [isGameOpen, setIsGameOpen] = useState(false);
 
   const menus = [
-    { name: "Home", icon: homeIcon },
-    { name: "Game", icon: gameIcon, hasSubmenu: true },
-    { name: "Library", icon: libraryIcon },
-    { name: "Social", icon: socialIcon },
-    { name: "Board", icon: boardIcon },
-    { name: "Setting", icon: settingIcon },
+    { id: "nav_home_button", name: "Home", icon: homeIcon },
+    { id: "nav_game_button", name: "Game", icon: gameIcon, hasSubmenu: true },
+    { id: "nav_library_button", name: "Library", icon: libraryIcon },
+    { id: "nav_social_button", name: "Social", icon: socialIcon },
+    { id: "nav_board_button", name: "Board", icon: boardIcon },
+    { id: "nav_setting_button", name: "Setting", icon: settingIcon },
   ];
 
   const subMenus = [
@@ -74,7 +76,7 @@ function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <aside id="site_sidebar" className="sidebar">
       <div className="site-info">
         <img src={logo} alt="SteamInfoSite Logo" />
         <span>SteamInfoSite</span>
@@ -87,6 +89,7 @@ function Sidebar() {
             className="menu-group"
           >
             <button
+              id={menu.id}
               className={`sidebar-menu-item ${
                 isMenuActive(menu.name) ? "active" : ""
               }`}

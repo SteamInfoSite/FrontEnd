@@ -15,6 +15,7 @@ function CommentForm({ onCommentSubmit }) {
   return (
     <div className="comment-form">
       <input
+        id="comment_nickname_input"
         className="comment-nickname-input"
         placeholder="닉네임"
         maxLength={20}
@@ -22,12 +23,14 @@ function CommentForm({ onCommentSubmit }) {
         onChange={(e) => setNickname(e.target.value)}
       />
       <textarea
+        id="comment_content_input"
         placeholder="댓글을 작성할 수 있습니다."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
 
       <button
+        id="comment_submit_button"
         className="comment-submit-button"
         onClick={handleSubmit}
       >

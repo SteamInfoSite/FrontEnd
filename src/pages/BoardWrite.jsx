@@ -174,7 +174,7 @@ function BoardWrite() {
             <h1>Community Board</h1>
           </div>
 
-          <form className="board-write-form" onSubmit={handleSubmit}>
+          <form id="post_write_form" className="board-write-form" onSubmit={handleSubmit}>
             <div className="board-write-categories" role="group" aria-label="말머리 선택">
               <div className="board-write-category-side">
                 <span className="board-write-category-label">말머리</span>
@@ -191,9 +191,9 @@ function BoardWrite() {
                 ))}
               </div>
               <div className="board-write-nickname-side">
-                <label htmlFor="board-nickname">닉네임</label>
+                <label htmlFor="board_nickname">닉네임</label>
                 <input
-                  id="board-nickname"
+                  id="board_nickname"
                   className="board-write-nickname"
                   aria-label="닉네임"
                   placeholder="닉네임을 입력해 주세요."
@@ -205,6 +205,7 @@ function BoardWrite() {
             </div>
 
             <input
+              id="post_title_input"
               className="board-write-title"
               aria-label="게시글 제목"
               placeholder="제목을 입력해 주세요."
@@ -230,7 +231,7 @@ function BoardWrite() {
                 <button type="button" disabled={isImageLoading} onMouseDown={(event) => event.preventDefault()} onClick={() => imageInputRef.current.click()}>이미지</button>
                 <button type="button" disabled title="준비 중">동영상</button>
                 <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={handleLink}>링크</button>
-                <select aria-label="글꼴" value={fontName} onChange={(event) => { setFontName(event.target.value); applyFormat("fontName", event.target.value); }}>
+                <select id="editor_font_select" aria-label="글꼴" value={fontName} onChange={(event) => { setFontName(event.target.value); applyFormat("fontName", event.target.value); }}>
                   <option value="" disabled>글꼴</option>
                   <option value="Malgun Gothic">맑은 고딕</option>
                   <option value="Arial">Arial</option>
@@ -246,7 +247,7 @@ function BoardWrite() {
                 <button type="button" aria-label="굵게" aria-pressed={!!formats.bold} onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("bold")}><b>B</b></button>
                 <button type="button" aria-label="기울임" aria-pressed={!!formats.italic} onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("italic")}><i>I</i></button>
                 <button type="button" aria-label="밑줄" aria-pressed={!!formats.underline} onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("underline")}><u>U</u></button>
-                <select aria-label="글자색" value={textColor} onChange={(event) => { setTextColor(event.target.value); applyFormat("foreColor", event.target.value); }}>
+                <select id="editor_text_color_select" aria-label="글자색" value={textColor} onChange={(event) => { setTextColor(event.target.value); applyFormat("foreColor", event.target.value); }}>
                   <option value="" disabled>글자색</option>
                   <option value="#222222">기본 검정</option>
                   <option value="#dc2626">빨강</option>
@@ -268,6 +269,7 @@ function BoardWrite() {
                 <span className="board-write-tool-hint">사진 최대 3장 · 장당 5MB · Ctrl+V 가능</span>
               </div>
               <div
+                id="post_content_editor"
                 ref={editorRef}
                 className="board-write-body"
                 contentEditable={!isImageLoading}

@@ -30,6 +30,7 @@ function BoardTable({ posts = [], onPostClick }) {
         {posts.map((post) => (
           <button
             key={post.id}
+            id={`board_post_${post.id}`}
             className="board-row"
             onClick={() => onPostClick(post)}
           >
