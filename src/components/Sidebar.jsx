@@ -41,7 +41,7 @@ function Sidebar() {
 
   const subMenus = [
     { id: "nav_hot_game_button", name: "Hot game", icon: hotIcon, path: "/games/hot" },
-    { name: "New game", icon: newIcon },
+    { id: "nav_new_game_button", name: "New game", icon: newIcon, path: "/games/new" },
     { name: "Pay-to-play", icon: payIcon },
     { name: "Free game", icon: freeIcon },
     { name: "Discount", icon: discountIcon },

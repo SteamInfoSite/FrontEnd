@@ -10,6 +10,7 @@ import BoardDetail from "./pages/BoardDetail";
 import BoardWrite from "./pages/BoardWrite";
 import GameDetail from "./pages/GameDetail";
 import HotGames from "./pages/HotGames";
+import NewGames from "./pages/NewGames";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route path="/board/write" element={<BoardWrite />} />
         <Route path="/games/hot" element={<HotGames />} />
+        <Route path="/games/new" element={<NewGames />} />
         <Route path="/games/:appId" element={<GameDetail />} />
         <Route
           path="/"

@@ -38,6 +38,25 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 
 `hot_game_item_${game.id}`에서 `${game.id}`는 현재 목업 게임의 식별자이며, API 연결 후 서버의 Steam appId로 바꿉니다.
 
+## 신작 게임 목록 — src/pages/NewGames.jsx
+
+신작 목록도 Hot game과 같은 목록·필터 구조를 사용하며, 출시일을 기준으로 정렬합니다.
+
+신작 목록 본문: `new_games_content`
+장르 필터 선택창: `new_genre_select`
+플랫폼 필터 선택창: `new_platform_select`
+출시일 정렬 선택창: `new_sort_select`
+신작 목록 로딩 안내: `new_games_loading`
+신작 목록 조회 실패 영역: `new_games_error`
+신작 목록 다시 시도 버튼: `new_games_retry_button`
+신작 검색 결과 없음 영역: `new_games_empty`
+필터 초기화 버튼: `new_filters_reset_button`
+신작 게임 목록 테이블: `new_game_list`
+신작 게임별 목록 행: `new_game_item_${game.id}`
+신작 목록 페이지 이동 영역: `new_game_pagination`
+신작 이전 페이지 버튼: `new_page_prev_button`
+신작 다음 페이지 버튼: `new_page_next_button`
+
 ## 공통
 
 | ID | 파일 / 위치 / 용도 |
@@ -46,6 +65,7 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 | site_header | src/components/Header.jsx / header / 공통 헤더 |
 | game_search_input | src/components/Header.jsx / input / 게임 검색 입력 |
 | steam_login_button | src/components/Header.jsx / button / Steam 로그인 버튼 |
+
 | site_sidebar | src/components/Sidebar.jsx / aside / 공통 사이드바 |
 | nav_home_button | src/components/Sidebar.jsx / button / Home 메뉴 |
 | nav_game_button | src/components/Sidebar.jsx / button / Game 하위 메뉴 열기·닫기 |
@@ -53,6 +73,7 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 | nav_social_button | src/components/Sidebar.jsx / button / Social 메뉴 |
 | nav_board_button | src/components/Sidebar.jsx / button / Board 메뉴 |
 | nav_setting_button | src/components/Sidebar.jsx / button / Setting 메뉴 |
+| nav_new_game_button | src/components/Sidebar.jsx / button / New game 메뉴 |
 
 ID 존재 자체가 검색·로그인·각 메뉴의 기능 구현 완료를 뜻하지는 않습니다.
 

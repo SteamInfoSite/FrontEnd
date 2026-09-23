@@ -180,6 +180,17 @@
   font-variant-numeric: tabular-nums;
 }
 
+.new-games-table th:last-child {
+  width: 132px;
+}
+
+.new-game-date {
+  color: #7c3aed;
+  font-size: 14px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 /* =========================
    Pagination & Request States
 ========================= */

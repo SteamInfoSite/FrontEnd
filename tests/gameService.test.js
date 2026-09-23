@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getHotGames } from "../src/services/gameService.js";
+import { getHotGames, getNewGames } from "../src/services/gameService.js";
 
 test("pages contain distinct games and report the filtered total", async () => {
   const first = await getHotGames({ page: 1, pageSize: 10 });
@@ -43,4 +43,15 @@ test("invalid page sizes use defaults and out of range pages contain no rows", a
   const overflow = await getHotGames({ page: 999 });
   assert.equal(overflow.items.length, 0);
   assert.equal(overflow.totalCount, 12);
+});
+
+test("new games are sorted by release date and can be filtered", async () => {
+  const latest = await getNewGames({ pageSize: 20 });
+  assert.equal(latest.totalCount, 8);
+  assert.equal(latest.items[0].title, "HB Inc.");
+  assert.ok(latest.items[0].releaseDate >= latest.items.at(-1).releaseDate);
+
+  const filtered = await getNewGames({ genre: "액션", platform: "windows" });
+  assert.ok(filtered.items.length > 0);
+  assert.ok(filtered.items.every((game) => game.genres.includes("액션") && game.platforms.windows));
 });
