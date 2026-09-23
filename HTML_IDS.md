@@ -74,6 +74,47 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 | nav_board_button | src/components/Sidebar.jsx / button / Board 메뉴 |
 | nav_setting_button | src/components/Sidebar.jsx / button / Setting 메뉴 |
 | nav_new_game_button | src/components/Sidebar.jsx / button / New game 메뉴 |
+| nav_pay_to_play_button | src/components/Sidebar.jsx / button / Pay-to-play 메뉴 |
+| nav_free_game_button | src/components/Sidebar.jsx / button / Free game 메뉴 |
+| nav_discount_button | src/components/Sidebar.jsx / button / Discount 메뉴 |
+
+## 유료·무료 게임 목록 — src/pages/PriceGames.jsx
+
+`PriceGames`는 `mode="paid"`일 때 유료 게임만, `mode="free"`일 때 무료 게임만 표시합니다. 따라서 아래 ID의 `paid`와 `free`는 각각 페이지에 따라 달라집니다.
+
+유료·무료 게임 목록 본문: `paid_games_content` / `free_games_content`
+장르 필터 선택창: `paid_genre_select` / `free_genre_select`
+플랫폼 필터 선택창: `paid_platform_select` / `free_platform_select`
+정렬 선택창: `paid_sort_select` / `free_sort_select`
+목록 로딩 안내: `paid_games_loading` / `free_games_loading`
+목록 조회 실패 영역: `paid_games_error` / `free_games_error`
+목록 다시 시도 버튼: `paid_games_retry_button` / `free_games_retry_button`
+검색 결과 없음 영역: `paid_games_empty` / `free_games_empty`
+필터 초기화 버튼: `paid_filters_reset_button` / `free_filters_reset_button`
+게임 목록 테이블: `paid_game_list` / `free_game_list`
+게임별 목록 행: `paid_game_item_${game.id}` / `free_game_item_${game.id}`
+목록 페이지 이동 영역: `paid_game_pagination` / `free_game_pagination`
+이전 페이지 버튼: `paid_page_prev_button` / `free_page_prev_button`
+다음 페이지 버튼: `paid_page_next_button` / `free_page_next_button`
+
+## 할인 게임 목록 — src/pages/PriceGames.jsx
+
+`PriceGames`가 `mode="discount"`일 때 할인율이 있는 유료 게임만 표시합니다.
+
+할인 게임 목록 본문: `discount_games_content`
+장르 필터 선택창: `discount_genre_select`
+플랫폼 필터 선택창: `discount_platform_select`
+할인 정렬 선택창: `discount_sort_select`
+할인 목록 로딩 안내: `discount_games_loading`
+할인 목록 조회 실패 영역: `discount_games_error`
+할인 목록 다시 시도 버튼: `discount_games_retry_button`
+할인 검색 결과 없음 영역: `discount_games_empty`
+할인 필터 초기화 버튼: `discount_filters_reset_button`
+할인 게임 목록 테이블: `discount_game_list`
+할인 게임별 목록 행: `discount_game_item_${game.id}`
+할인 목록 페이지 이동 영역: `discount_game_pagination`
+할인 이전 페이지 버튼: `discount_page_prev_button`
+할인 다음 페이지 버튼: `discount_page_next_button`
 
 ID 존재 자체가 검색·로그인·각 메뉴의 기능 구현 완료를 뜻하지는 않습니다.
 

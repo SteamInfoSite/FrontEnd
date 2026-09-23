@@ -76,3 +76,72 @@ export async function getNewGames({
     totalCount: filteredGames.length,
   };
 }
+
+export async function getGamesByPrice({
+  isFree,
+  genre = "all",
+  platform = "all",
+  sort = "recommendations_desc",
+  page = 1,
+  pageSize = 10,
+  signal,
+} = {}) {
+  signal?.throwIfAborted();
+
+  const filteredGames = mockHotGames
+    .filter((game) => game.isFree === isFree)
+    .filter((game) => genre === "all" || game.genres.includes(genre))
+    .filter((game) => platform === "all" || game.platforms[platform])
+    .sort((first, second) => {
+      if (sort === "title_asc") return first.title.localeCompare(second.title);
+      return second.recommendationsTotal - first.recommendationsTotal || first.id - second.id;
+    })
+    .map((game, index) => ({
+      ...game,
+      genres: [...game.genres],
+      platforms: { ...game.platforms },
+      rank: index + 1,
+    }));
+
+  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
+  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
+  const start = (currentPage - 1) * size;
+  return {
+    items: filteredGames.slice(start, start + size),
+    totalCount: filteredGames.length,
+  };
+}
+
+export async function getDiscountGames({
+  genre = "all",
+  platform = "all",
+  sort = "discount_desc",
+  page = 1,
+  pageSize = 10,
+  signal,
+} = {}) {
+  signal?.throwIfAborted();
+
+  const filteredGames = mockHotGames
+    .filter((game) => !game.isFree && game.discountPercent > 0)
+    .filter((game) => genre === "all" || game.genres.includes(genre))
+    .filter((game) => platform === "all" || game.platforms[platform])
+    .sort((first, second) => {
+      if (sort === "title_asc") return first.title.localeCompare(second.title);
+      return second.discountPercent - first.discountPercent || second.recommendationsTotal - first.recommendationsTotal;
+    })
+    .map((game, index) => ({
+      ...game,
+      genres: [...game.genres],
+      platforms: { ...game.platforms },
+      rank: index + 1,
+    }));
+
+  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
+  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
+  const start = (currentPage - 1) * size;
+  return {
+    items: filteredGames.slice(start, start + size),
+    totalCount: filteredGames.length,
+  };
+}

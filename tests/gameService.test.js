@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getHotGames, getNewGames } from "../src/services/gameService.js";
+import { getDiscountGames, getGamesByPrice, getHotGames, getNewGames } from "../src/services/gameService.js";
 
 test("pages contain distinct games and report the filtered total", async () => {
   const first = await getHotGames({ page: 1, pageSize: 10 });
@@ -54,4 +54,21 @@ test("new games are sorted by release date and can be filtered", async () => {
   const filtered = await getNewGames({ genre: "액션", platform: "windows" });
   assert.ok(filtered.items.length > 0);
   assert.ok(filtered.items.every((game) => game.genres.includes("액션") && game.platforms.windows));
+});
+
+test("paid and free lists only return the requested price type", async () => {
+  const paid = await getGamesByPrice({ isFree: false, pageSize: 20 });
+  const free = await getGamesByPrice({ isFree: true, pageSize: 20 });
+  assert.ok(paid.items.length > 0);
+  assert.ok(free.items.length > 0);
+  assert.ok(paid.items.every((game) => game.isFree === false && game.priceText !== "무료"));
+  assert.ok(free.items.every((game) => game.isFree === true && game.priceText === "무료"));
+});
+
+test("discount list only returns discounted paid games in discount order", async () => {
+  const result = await getDiscountGames({ pageSize: 20 });
+  assert.equal(result.totalCount, 7);
+  assert.ok(result.items.every((game) => game.isFree === false && game.discountPercent > 0));
+  assert.equal(result.items[0].discountPercent, 75);
+  assert.ok(result.items.every((game, index) => index === 0 || game.discountPercent <= result.items[index - 1].discountPercent));
 });

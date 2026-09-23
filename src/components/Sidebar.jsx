@@ -42,11 +42,11 @@ function Sidebar() {
   const subMenus = [
     { id: "nav_hot_game_button", name: "Hot game", icon: hotIcon, path: "/games/hot" },
     { id: "nav_new_game_button", name: "New game", icon: newIcon, path: "/games/new" },
-    { name: "Pay-to-play", icon: payIcon },
-    { name: "Free game", icon: freeIcon },
-    { name: "Discount", icon: discountIcon },
+    { id: "nav_pay_to_play_button", name: "Pay-to-play", icon: payIcon, path: "/games/paid" },
+    { id: "nav_free_game_button", name: "Free game", icon: freeIcon, path: "/games/free" },
+    { id: "nav_discount_button", name: "Discount", icon: discountIcon, path: "/games/discount" },
     { name: "Genre", icon: genreIcon },
-    { name: "Scheduled", icon: scheduleIcon },
+    { name: "Upcoming", icon: scheduleIcon },
   ];
 
   const handleMenuClick = (menuName) => {

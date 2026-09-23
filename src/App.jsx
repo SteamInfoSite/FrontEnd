@@ -11,6 +11,7 @@ import BoardWrite from "./pages/BoardWrite";
 import GameDetail from "./pages/GameDetail";
 import HotGames from "./pages/HotGames";
 import NewGames from "./pages/NewGames";
+import PriceGames from "./pages/PriceGames";
 
 function App() {
   return (
@@ -19,6 +20,9 @@ function App() {
         <Route path="/board/write" element={<BoardWrite />} />
         <Route path="/games/hot" element={<HotGames />} />
         <Route path="/games/new" element={<NewGames />} />
+        <Route path="/games/paid" element={<PriceGames mode="paid" />} />
+        <Route path="/games/free" element={<PriceGames mode="free" />} />
+        <Route path="/games/discount" element={<PriceGames mode="discount" />} />
         <Route path="/games/:appId" element={<GameDetail />} />
         <Route
           path="/"
