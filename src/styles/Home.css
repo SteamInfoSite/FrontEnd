@@ -190,6 +190,11 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.submenu-item.active {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+
 /* =========================
    Main Area (독립 스크롤)
 ========================= */

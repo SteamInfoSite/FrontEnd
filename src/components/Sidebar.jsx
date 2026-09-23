@@ -28,7 +28,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isGameOpen, setIsGameOpen] = useState(location.pathname.startsWith("/games"));
 
   const menus = [
     { id: "nav_home_button", name: "Home", icon: homeIcon },
@@ -40,7 +40,7 @@ function Sidebar() {
   ];
 
   const subMenus = [
-    { name: "Hot game", icon: hotIcon },
+    { id: "nav_hot_game_button", name: "Hot game", icon: hotIcon, path: "/games/hot" },
     { name: "New game", icon: newIcon },
     { name: "Pay-to-play", icon: payIcon },
     { name: "Free game", icon: freeIcon },
@@ -98,6 +98,7 @@ function Sidebar() {
                 isMenuActive(menu.name) ? "active" : ""
               }`}
               onClick={() => handleMenuClick(menu.name)}
+              aria-expanded={menu.hasSubmenu ? isGameOpen : undefined}
             >
               <img src={menu.icon} alt="" />
               <span>{menu.name}</span>
@@ -109,7 +110,10 @@ function Sidebar() {
                 {subMenus.map((sub) => (
                   <button
                     key={sub.name}
-                    className="submenu-item"
+                    id={sub.id}
+                    className={`submenu-item ${location.pathname === sub.path ? "active" : ""}`}
+                    aria-current={location.pathname === sub.path ? "page" : undefined}
+                    onClick={() => { if (sub.path) navigate(sub.path); }}
                   >
                     <img src={sub.icon} alt="" />
                     <span>{sub.name}</span>

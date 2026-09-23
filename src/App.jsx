@@ -9,12 +9,14 @@ import Board from "./pages/Board";
 import BoardDetail from "./pages/BoardDetail";
 import BoardWrite from "./pages/BoardWrite";
 import GameDetail from "./pages/GameDetail";
+import HotGames from "./pages/HotGames";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/board/write" element={<BoardWrite />} />
+        <Route path="/games/hot" element={<HotGames />} />
         <Route path="/games/:appId" element={<GameDetail />} />
         <Route
           path="/"

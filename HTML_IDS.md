@@ -17,6 +17,27 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 | game_requirements | section: 최소·권장 사양, 메뉴 앵커 |
 | game_video_section | section: 영상, 메뉴 앵커 |
 
+## 인기 게임 목록 — src/pages/HotGames.jsx
+
+| ID | 역할 |
+| --- | --- |
+| hot_games_content | main: Hot game 목록 페이지 본문 |
+| hot_genre_select | select: 장르 필터 |
+| hot_platform_select | select: 플랫폼 필터 |
+| hot_sort_select | select: 추천 수 정렬 방식 |
+| hot_games_loading | p: 목록 로딩 상태 안내 |
+| hot_games_error | div: 목록 조회 실패 상태 |
+| hot_games_retry_button | button: 목록 조회 재시도 |
+| hot_games_empty | div: 필터 결과 없음 상태 |
+| hot_filters_reset_button | button: 필터 초기화 |
+| hot_game_list | table: 게임 목록 |
+| hot_game_item_${game.id} | tr: 게임별 목록 행 식별자 |
+| hot_game_pagination | nav: 페이지 이동 영역 |
+| hot_page_prev_button | button: 이전 페이지 이동 |
+| hot_page_next_button | button: 다음 페이지 이동 |
+
+`hot_game_item_${game.id}`에서 `${game.id}`는 현재 목업 게임의 식별자이며, API 연결 후 서버의 Steam appId로 바꿉니다.
+
 ## 공통
 
 | ID | 파일 / 위치 / 용도 |
