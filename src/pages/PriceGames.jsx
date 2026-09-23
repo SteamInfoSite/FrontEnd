@@ -11,18 +11,11 @@ import "../styles/HotGames.css";
 const PAGE_SIZE = 10;
 
 function PriceGames({ mode }) {
-  const isFree = mode === "free" ? true : mode === "paid" ? false : undefined;
+  const isFree = mode === "free";
   const isDiscount = mode === "discount";
-  const isGenre = mode === "genre";
-  const prefix = isDiscount ? "discount" : isGenre ? "genre" : isFree ? "free" : "paid";
-  const title = isDiscount ? "Discount" : isGenre ? "Genre" : isFree ? "Free game" : "Pay-to-play";
-  const description = isDiscount
-    ? "할인 중인 게임과 할인율을 확인하세요."
-    : isGenre
-      ? "장르별 게임을 확인하세요."
-      : isFree
-        ? "무료로 플레이할 수 있는 게임을 확인하세요."
-        : "유료로 판매 중인 게임을 확인하세요.";
+  const prefix = isDiscount ? "discount" : isFree ? "free" : "paid";
+  const title = isDiscount ? "Discount" : isFree ? "Free game" : "Pay-to-play";
+  const description = isDiscount ? "할인 중인 게임과 할인율을 확인하세요." : isFree ? "무료로 플레이할 수 있는 게임을 확인하세요." : "유료로 판매 중인 게임을 확인하세요.";
   const [searchParams, setSearchParams] = useSearchParams();
   const genre = hotGameGenres.includes(searchParams.get("genre")) ? searchParams.get("genre") : "all";
   const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";

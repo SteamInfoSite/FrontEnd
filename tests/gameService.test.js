@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getDiscountGames, getGamesByPrice, getHotGames, getNewGames, getUpcomingGames } from "../src/services/gameService.js";
+import { getDiscountGames, getGamesByPrice, getGenreGames, getHotGames, getNewGames, getUpcomingGames } from "../src/services/gameService.js";
 
 test("pages contain distinct games and report the filtered total", async () => {
   const first = await getHotGames({ page: 1, pageSize: 10 });
@@ -76,9 +76,9 @@ test("paid and free lists only return the requested price type", async () => {
   assert.ok(free.items.every((game) => game.isFree === true && game.priceText === "무료"));
 });
 
-test("genre mode can return all games or only the selected genre", async () => {
-  const allGames = await getGamesByPrice({ isFree: undefined, pageSize: 20 });
-  const actionGames = await getGamesByPrice({ isFree: undefined, genre: "액션", pageSize: 20 });
+test("genre list can return all games or only the selected genre", async () => {
+  const allGames = await getGenreGames({ pageSize: 20 });
+  const actionGames = await getGenreGames({ genre: "액션", pageSize: 20 });
   assert.equal(allGames.totalCount, 12);
   assert.ok(actionGames.items.length > 0);
   assert.ok(actionGames.items.every((game) => game.genres.includes("액션")));

@@ -137,9 +137,9 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 할인 이전 페이지 버튼: `discount_page_prev_button`
 할인 다음 페이지 버튼: `discount_page_next_button`
 
-## 장르 게임 목록 — src/pages/PriceGames.jsx
+## 장르 게임 목록 — src/pages/GenreGames.jsx
 
-`PriceGames`가 `mode="genre"`일 때 장르별 게임을 표시합니다. 장르를 선택하지 않으면 전체 장르가 표시됩니다.
+`GenreGames`가 장르별 게임을 표시합니다. 장르를 선택하지 않으면 전체 장르가 표시됩니다.
 
 장르 게임 목록 본문: `genre_games_content`
 장르 필터 선택창: `genre_genre_select`

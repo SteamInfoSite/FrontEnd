@@ -12,6 +12,7 @@ import GameDetail from "./pages/GameDetail";
 import HotGames from "./pages/HotGames";
 import NewGames from "./pages/NewGames";
 import UpcomingGames from "./pages/UpcomingGames";
+import GenreGames from "./pages/GenreGames";
 import PriceGames from "./pages/PriceGames";
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
         <Route path="/games/paid" element={<PriceGames mode="paid" />} />
         <Route path="/games/free" element={<PriceGames mode="free" />} />
         <Route path="/games/discount" element={<PriceGames mode="discount" />} />
-        <Route path="/games/genre" element={<PriceGames mode="genre" />} />
+        <Route path="/games/genre" element={<GenreGames />} />
         <Route path="/games/:appId" element={<GameDetail />} />
         <Route
           path="/"
