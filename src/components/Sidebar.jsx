@@ -72,6 +72,10 @@ function Sidebar() {
       return location.pathname.startsWith("/board");
     }
 
+    if (menuName === "Game") {
+      return location.pathname.startsWith("/games");
+    }
+
     return false;
   };
 

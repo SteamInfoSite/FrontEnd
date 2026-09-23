@@ -1,7 +1,7 @@
 function Header() {
   const handleSteamLogin = () => {
-    // 향후 Backend의 Steam OpenID 인증 URL로 리다이렉트 처리 구역
-    console.log("Steam 로그인 요청");
+    // 인증 API 연결 전에는 Steam 공식 로그인 화면으로 이동합니다.
+    window.location.assign("https://store.steampowered.com/login/");
   };
 
   return (

@@ -1,8 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 function GameCard({ game, featured }) {
+  const navigate = useNavigate();
+
   return (
-    <div className={`game-card ${featured ? "featured" : ""}`}>
+    <button
+      type="button"
+      className={`game-card ${featured ? "featured" : ""}`}
+      onClick={() => navigate(`/games/${game.id}`)}
+      aria-label={`${game.title} 상세 페이지로 이동`}
+    >
       <img src={game.image} alt={game.title || "Game"} />
-    </div>
+    </button>
   );
 }
 
