@@ -3,16 +3,19 @@ import {
   mockPopularGames,
 } from "./gameMockData";
 import { mockHotGames } from "./hotGameMockData";
+import { mockUpcomingGames } from "./upcomingGameMockData";
 import placeholderImage from "../assets/logo0.png";
 
 const allMockGames = [
   ...mockNewGames,
   ...mockPopularGames,
   ...mockHotGames.filter((game) => ![...mockNewGames, ...mockPopularGames].some((item) => item.id === game.id)),
+  ...mockUpcomingGames,
 ];
 
 export const mockGameDetails = allMockGames.map((game) => {
   const hotGame = mockHotGames.find((item) => item.id === game.id);
+  const upcomingGame = mockUpcomingGames.find((item) => item.id === game.id);
   return {
     ...game,
     image: game.image || placeholderImage,
@@ -21,7 +24,7 @@ export const mockGameDetails = allMockGames.map((game) => {
     requiredAge: null,
     isFree: game.id !== 4,
     shortDescription: "백엔드 API 연결 후 게임 소개가 표시됩니다.",
-    comingSoon: game.id <= 3,
+    comingSoon: game.id <= 3 || Boolean(upcomingGame),
     relDate: "출시일 정보 없음",
     developers: [],
     publishers: [],

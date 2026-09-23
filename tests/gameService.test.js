@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getDiscountGames, getGamesByPrice, getHotGames, getNewGames } from "../src/services/gameService.js";
+import { getDiscountGames, getGamesByPrice, getHotGames, getNewGames, getUpcomingGames } from "../src/services/gameService.js";
 
 test("pages contain distinct games and report the filtered total", async () => {
   const first = await getHotGames({ page: 1, pageSize: 10 });
@@ -56,6 +56,17 @@ test("new games are sorted by release date and can be filtered", async () => {
   assert.ok(filtered.items.every((game) => game.genres.includes("액션") && game.platforms.windows));
 });
 
+test("upcoming games are sorted by planned release date and can be filtered", async () => {
+  const upcoming = await getUpcomingGames({ pageSize: 20 });
+  assert.equal(upcoming.totalCount, 6);
+  assert.equal(upcoming.items[0].title, "Project Aurora");
+  assert.ok(upcoming.items[0].releaseDate <= upcoming.items.at(-1).releaseDate);
+
+  const filtered = await getUpcomingGames({ genre: "전략", platform: "mac" });
+  assert.ok(filtered.items.length > 0);
+  assert.ok(filtered.items.every((game) => game.genres.includes("전략") && game.platforms.mac));
+});
+
 test("paid and free lists only return the requested price type", async () => {
   const paid = await getGamesByPrice({ isFree: false, pageSize: 20 });
   const free = await getGamesByPrice({ isFree: true, pageSize: 20 });
@@ -63,6 +74,14 @@ test("paid and free lists only return the requested price type", async () => {
   assert.ok(free.items.length > 0);
   assert.ok(paid.items.every((game) => game.isFree === false && game.priceText !== "무료"));
   assert.ok(free.items.every((game) => game.isFree === true && game.priceText === "무료"));
+});
+
+test("genre mode can return all games or only the selected genre", async () => {
+  const allGames = await getGamesByPrice({ isFree: undefined, pageSize: 20 });
+  const actionGames = await getGamesByPrice({ isFree: undefined, genre: "액션", pageSize: 20 });
+  assert.equal(allGames.totalCount, 12);
+  assert.ok(actionGames.items.length > 0);
+  assert.ok(actionGames.items.every((game) => game.genres.includes("액션")));
 });
 
 test("discount list only returns discounted paid games in discount order", async () => {

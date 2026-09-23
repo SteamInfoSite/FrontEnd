@@ -45,8 +45,8 @@ function Sidebar() {
     { id: "nav_pay_to_play_button", name: "Pay-to-play", icon: payIcon, path: "/games/paid" },
     { id: "nav_free_game_button", name: "Free game", icon: freeIcon, path: "/games/free" },
     { id: "nav_discount_button", name: "Discount", icon: discountIcon, path: "/games/discount" },
-    { name: "Genre", icon: genreIcon },
-    { name: "Upcoming", icon: scheduleIcon },
+    { id: "nav_genre_button", name: "Genre", icon: genreIcon, path: "/games/genre" },
+    { id: "nav_upcoming_button", name: "Upcoming", icon: scheduleIcon, path: "/games/upcoming" },
   ];
 
   const handleMenuClick = (menuName) => {
@@ -60,6 +60,11 @@ function Sidebar() {
 
     if (menuName === "Board") {
       navigate("/board");
+    }
+
+    if (menuName === "Library" || menuName === "Social") {
+      window.alert(`${menuName} 메뉴는 로그인 후 이용할 수 있습니다. Steam 로그인 화면으로 이동합니다.`);
+      window.location.assign("https://store.steampowered.com/login/");
     }
   };
 

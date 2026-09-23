@@ -1,5 +1,6 @@
 import { mockHotGames } from "../mocks/hotGameMockData.js";
 import { mockNewGames } from "../mocks/newGameMockData.js";
+import { mockUpcomingGames } from "../mocks/upcomingGameMockData.js";
 
 export const hotGameGenres = ["액션", "전략", "시뮬레이션", "어드벤처", "퍼즐", "스포츠"];
 export const hotGamePlatforms = [
@@ -77,6 +78,39 @@ export async function getNewGames({
   };
 }
 
+export async function getUpcomingGames({
+  genre = "all",
+  platform = "all",
+  sort = "released_asc",
+  page = 1,
+  pageSize = 10,
+  signal,
+} = {}) {
+  signal?.throwIfAborted();
+
+  const filteredGames = mockUpcomingGames
+    .filter((game) => genre === "all" || game.genres.includes(genre))
+    .filter((game) => platform === "all" || game.platforms[platform])
+    .sort((first, second) => {
+      const dateOrder = first.releaseDate.localeCompare(second.releaseDate);
+      return sort === "released_desc" ? -dateOrder : dateOrder;
+    })
+    .map((game, index) => ({
+      ...game,
+      genres: [...game.genres],
+      platforms: { ...game.platforms },
+      rank: index + 1,
+    }));
+
+  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
+  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
+  const start = (currentPage - 1) * size;
+  return {
+    items: filteredGames.slice(start, start + size),
+    totalCount: filteredGames.length,
+  };
+}
+
 export async function getGamesByPrice({
   isFree,
   genre = "all",
@@ -89,7 +123,7 @@ export async function getGamesByPrice({
   signal?.throwIfAborted();
 
   const filteredGames = mockHotGames
-    .filter((game) => game.isFree === isFree)
+    .filter((game) => isFree == null || game.isFree === isFree)
     .filter((game) => genre === "all" || game.genres.includes(genre))
     .filter((game) => platform === "all" || game.platforms[platform])
     .sort((first, second) => {

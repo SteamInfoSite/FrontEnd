@@ -57,6 +57,25 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 신작 이전 페이지 버튼: `new_page_prev_button`
 신작 다음 페이지 버튼: `new_page_next_button`
 
+## 출시 예정 게임 목록 — src/pages/UpcomingGames.jsx
+
+출시 예정 목업 게임을 표시하며, 장르·플랫폼 필터와 출시일 정렬을 제공합니다.
+
+출시 예정 게임 목록 본문: `upcoming_games_content`
+장르 필터 선택창: `upcoming_genre_select`
+플랫폼 필터 선택창: `upcoming_platform_select`
+출시일 정렬 선택창: `upcoming_sort_select`
+출시 예정 목록 로딩 안내: `upcoming_games_loading`
+출시 예정 목록 조회 실패 영역: `upcoming_games_error`
+출시 예정 목록 다시 시도 버튼: `upcoming_games_retry_button`
+출시 예정 검색 결과 없음 영역: `upcoming_games_empty`
+출시 예정 필터 초기화 버튼: `upcoming_filters_reset_button`
+출시 예정 게임 목록 테이블: `upcoming_game_list`
+출시 예정 게임별 목록 행: `upcoming_game_item_${game.id}`
+출시 예정 목록 페이지 이동 영역: `upcoming_game_pagination`
+출시 예정 이전 페이지 버튼: `upcoming_page_prev_button`
+출시 예정 다음 페이지 버튼: `upcoming_page_next_button`
+
 ## 공통
 
 | ID | 파일 / 위치 / 용도 |
@@ -77,6 +96,8 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 | nav_pay_to_play_button | src/components/Sidebar.jsx / button / Pay-to-play 메뉴 |
 | nav_free_game_button | src/components/Sidebar.jsx / button / Free game 메뉴 |
 | nav_discount_button | src/components/Sidebar.jsx / button / Discount 메뉴 |
+| nav_genre_button | src/components/Sidebar.jsx / button / Genre 메뉴 |
+| nav_upcoming_button | src/components/Sidebar.jsx / button / Upcoming 메뉴 |
 
 ## 유료·무료 게임 목록 — src/pages/PriceGames.jsx
 
@@ -115,6 +136,25 @@ ID는 DOM 요소 식별자이며 게임 데이터의 id/appId 및 localStorage �
 할인 목록 페이지 이동 영역: `discount_game_pagination`
 할인 이전 페이지 버튼: `discount_page_prev_button`
 할인 다음 페이지 버튼: `discount_page_next_button`
+
+## 장르 게임 목록 — src/pages/PriceGames.jsx
+
+`PriceGames`가 `mode="genre"`일 때 장르별 게임을 표시합니다. 장르를 선택하지 않으면 전체 장르가 표시됩니다.
+
+장르 게임 목록 본문: `genre_games_content`
+장르 필터 선택창: `genre_genre_select`
+플랫폼 필터 선택창: `genre_platform_select`
+장르 목록 정렬 선택창: `genre_sort_select`
+장르 목록 로딩 안내: `genre_games_loading`
+장르 목록 조회 실패 영역: `genre_games_error`
+장르 목록 다시 시도 버튼: `genre_games_retry_button`
+장르 검색 결과 없음 영역: `genre_games_empty`
+장르 필터 초기화 버튼: `genre_filters_reset_button`
+장르 게임 목록 테이블: `genre_game_list`
+장르 게임별 목록 행: `genre_game_item_${game.id}`
+장르 목록 페이지 이동 영역: `genre_game_pagination`
+장르 이전 페이지 버튼: `genre_page_prev_button`
+장르 다음 페이지 버튼: `genre_page_next_button`
 
 ID 존재 자체가 검색·로그인·각 메뉴의 기능 구현 완료를 뜻하지는 않습니다.
 
