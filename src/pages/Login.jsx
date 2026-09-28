@@ -1,23 +1,10 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo0.png";
+import { startSteamLogin } from "../services/steamAuthService";
 
 import "../styles/Login.css";
 
 function Login() {
-  const [accountName, setAccountName] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log({
-      accountName,
-      password,
-      rememberMe,
-    });
-  };
-
   return (
     <div className="login-page">
       <div className="login-logo-area">
@@ -25,52 +12,25 @@ function Login() {
         <h1>SteamInfoSite</h1>
       </div>
 
-      <form className="login-box" onSubmit={handleSubmit}>
-        <h2>Log in to your Steam account</h2>
+      <section className="login-box">
+        <h2>Steam 계정으로 로그인</h2>
 
-        <div className="login-input-group">
-          <label htmlFor="accountName">
-            계정 이름으로 로그인
-          </label>
-
-          <input
-            id="accountName"  
-            type="text"
-            value={accountName}
-            onChange={(e) => setAccountName(e.target.value)}
-          />
-        </div>
-
-        <div className="login-input-group">
-          <label htmlFor="password">
-            비밀번호
-          </label>
-
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <label className="remember-area">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
-
-          <span>Remember me</span>
-        </label>
+        <p>
+          Steam 공식 인증 화면에서 로그인합니다.
+        </p>
+        {/* SteamInfoSite에서는 스팀 계정의 비밀번호를 입력받거나 저장하지 않음 */}
 
         <button
-          type="submit"
+          id="steam_openid_login_button"
+          type="button"
           className="steam-login-button"
+          onClick={startSteamLogin}
         >
-          Steam Login
+          Steam으로 로그인
         </button>
-      </form>
+
+        <Link to="/">홈으로 돌아가기</Link>
+      </section>
     </div>
   );
 }

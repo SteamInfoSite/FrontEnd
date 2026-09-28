@@ -1,7 +1,10 @@
-function Header() {
+import { useNavigate } from "react-router-dom";
+
+function Header() { //로그인 안내 페이지로 보냄
+  const navigate = useNavigate();
+
   const handleSteamLogin = () => {
-    // 인증 API 연결 전에는 Steam 공식 로그인 화면으로 이동합니다.
-    window.location.assign("https://store.steampowered.com/login/");
+    navigate("/login");
   };
 
   return (
