@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRequireLogin } from "../hooks/useRequireLogin";
 import {
   useNavigate,
   useLocation,
@@ -28,6 +29,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const requireLogin = useRequireLogin();
   const [isGameOpen, setIsGameOpen] = useState(location.pathname.startsWith("/games"));
 
   const menus = [
@@ -52,19 +54,29 @@ function Sidebar() {
   const handleMenuClick = (menuName) => {
     if (menuName === "Home") {
       navigate("/");
+      return;
     }
 
     if (menuName === "Game") {
       setIsGameOpen((prev) => !prev);
+      return;
     }
 
     if (menuName === "Board") {
       navigate("/board");
+      return;
     }
 
     if (menuName === "Library" || menuName === "Social") {
-      window.alert(`${menuName} 메뉴는 로그인 후 이용할 수 있습니다. Steam 로그인 화면으로 이동합니다.`);
-      window.location.assign("https://store.steampowered.com/login/");
+      if (!requireLogin()) {
+            return;
+          }
+
+          window.alert(`${menuName} 기능은 준비 중입니다`);
+          return;
+    }
+    if (menuName === "Setting") {
+      window.alert("설정 기능은 준비 중입니다");
     }
   };
 

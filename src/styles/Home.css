@@ -262,7 +262,25 @@ body {
   justify-self: end;
 
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+
+  min-width: 0;
+  max-width: 100%;
+}
+
+.auth-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.auth-buttons button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
 }
 
 .auth-buttons button {

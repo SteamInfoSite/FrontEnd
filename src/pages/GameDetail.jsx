@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { useRequireLogin } from "../hooks/useRequireLogin";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
@@ -14,6 +15,7 @@ function GameDetail() {
 
 function GameDetailContent({ appId }) {
   const { hash } = useLocation();
+  const requireLogin = useRequireLogin();
   const [selectedImage, setSelectedImage] = useState(0);
   const game = mockGameDetails.find(
     (item) => item.id === Number(appId)
@@ -58,9 +60,10 @@ function GameDetailContent({ appId }) {
   ];
 
   const handleWishlist = () => {
-    window.alert("찜 목록은 로그인 후 이용할 수 있습니다. Steam 로그인 화면으로 이동합니다.");
-    // 인증 API 연결 전에는 Steam 공식 로그인 화면으로 이동합니다.
-    window.location.assign("https://store.steampowered.com/login/");
+    if (!requireLogin()) {
+      return;
+    }
+    window.alert("찜 목록 기능은 준비 중입니다");
   };
 
   return (
@@ -134,12 +137,10 @@ function GameDetailContent({ appId }) {
                 id="game_wishlist_button"
                 className="game-wishlist-button"
                 type="button"
-                aria-describedby="game_wishlist_note"
                 onClick={handleWishlist}
               >
                 ♡ 찜 목록에 추가
               </button>
-              <p id="game_wishlist_note" className="game-wishlist-note">찜 기능은 로그인 후 이용할 수 있습니다. 클릭하면 Steam 로그인 화면으로 이동합니다.</p>
             </div>
           </section>
 

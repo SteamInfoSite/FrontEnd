@@ -15,12 +15,17 @@ import UpcomingGames from "./pages/UpcomingGames";
 import GenreGames from "./pages/GenreGames";
 import PriceGames from "./pages/PriceGames";
 import Login from "./pages/Login";
+import SteamLoginComplete from "./pages/SteamLoginComplete";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route
+            path="/auth/steam/complete"
+            element={<SteamLoginComplete />}
+          />
         <Route path="/board/write" element={<BoardWrite />} />
         <Route path="/games/hot" element={<HotGames />} />
         <Route path="/games/new" element={<NewGames />} />
