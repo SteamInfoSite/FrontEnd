@@ -67,13 +67,18 @@ function Sidebar() {
       return;
     }
 
-    if (menuName === "Library" || menuName === "Social") {
-      if (!requireLogin()) {
-            return;
-          }
+    if (menuName === "Social") {
+      navigate("/social");
+      return;
+    }
 
-          window.alert(`${menuName} 기능은 준비 중입니다`);
-          return;
+    if (menuName === "Library") {
+      if (!requireLogin()) {
+        return;
+      }
+
+      window.alert("Library 기능은 준비 중입니다");
+      return;
     }
     if (menuName === "Setting") {
       window.alert("설정 기능은 준비 중입니다");
@@ -91,6 +96,10 @@ function Sidebar() {
 
     if (menuName === "Game") {
       return location.pathname.startsWith("/games");
+    }
+
+    if (menuName === "Social") {
+      return location.pathname === "/social";
     }
 
     return false;

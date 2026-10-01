@@ -1,0 +1,364 @@
+/* =========================
+   Page Layout
+========================= */
+
+.social-page {
+  display: flex;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #191b22;
+}
+
+.social-main-area {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.social-content {
+  min-height: calc(100vh - 165px);
+  margin: 0 40px;
+  padding: 24px 0 40px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.social-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #dedede;
+}
+
+.social-heading h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+.social-heading p {
+  margin: 0;
+  color: #777777;
+  font-size: 14px;
+}
+
+.social-example-label {
+  color: #888888;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.social-loading {
+  margin: 0;
+  padding: 80px 16px;
+  color: #777777;
+  text-align: center;
+}
+
+/* =========================
+   Login Notice
+========================= */
+
+.social-login-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  text-align: center;
+}
+
+.social-login-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.social-login-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 28px;
+  border-radius: 50%;
+  background: #eee3ff;
+}
+
+.social-login-icon svg {
+  width: 48px;
+  height: 48px;
+  stroke: #7c3aed;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.social-login-message h2 {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+
+.social-login-message p {
+  margin: 0;
+  color: #777777;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.social-login-message .social-auth-error {
+  margin-top: 12px;
+  color: #b42318;
+}
+
+.social-login-message button {
+  min-width: 210px;
+  min-height: 48px;
+  margin-top: 36px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 14px;
+  background: #8b45f5;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.social-login-message button:hover {
+  background: #7c3aed;
+}
+
+.social-login-footer {
+  width: 100%;
+  margin: 0;
+  padding: 24px 16px 32px;
+  border-top: 1px solid #eeeeee;
+  color: #888888;
+  font-size: 13px;
+}
+
+/* =========================
+   Friend Filters & List
+========================= */
+
+.social-friends {
+  padding-top: 26px;
+}
+
+.social-section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.social-section-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.social-section-heading span {
+  color: #7c3aed;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.social-friend-filters {
+  display: flex;
+  gap: 28px;
+  margin-top: 22px;
+  border-bottom: 1px solid #dedede;
+}
+
+.social-friend-filters button {
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #666666;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.social-friend-filters button.active {
+  border-bottom-color: #7c3aed;
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.social-table-scroll {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.social-friend-table {
+  width: 100%;
+  min-width: 690px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.social-friend-table th {
+  padding: 14px 16px;
+  background: #f0f0f0;
+  font-size: 13px;
+  text-align: left;
+}
+
+.social-friend-table th:first-child { width: 38%; }
+.social-friend-table th:nth-child(2) { width: 20%; }
+.social-friend-table th:nth-child(3) { width: 25%; }
+.social-friend-table th:last-child { width: 17%; text-align: center; }
+
+.social-friend-table td {
+  height: 72px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+}
+
+.social-friend-table tbody tr:first-child {
+  background: #faf7ff;
+}
+
+.social-friend-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.social-friend-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #eee3ff;
+  color: #7c3aed;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.social-friend-profile strong,
+.social-friend-profile small {
+  display: block;
+}
+
+.social-friend-profile small {
+  margin-top: 4px;
+  color: #888888;
+  font-size: 12px;
+}
+
+.social-friend-status::before {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #a0a0a0;
+  content: "";
+}
+
+.social-friend-status--playing::before { background: #8b45f5; }
+.social-friend-status--online::before { background: #2cb577; }
+.social-friend-status--away::before { background: #f2a93b; }
+
+.social-friend-game {
+  color: #4c267d;
+  font-weight: 700;
+}
+
+.social-friend-no-game {
+  color: #999999;
+}
+
+.social-friend-last-seen {
+  color: #666666;
+  text-align: center;
+}
+
+/* =========================
+   Recent Activity
+========================= */
+
+.social-recent-activity {
+  padding-top: 32px;
+}
+
+.social-recent-activity .social-section-heading span {
+  color: #777777;
+  font-weight: 400;
+}
+
+.social-activity-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  color: #444444;
+  font-size: 14px;
+}
+
+.social-activity-row time {
+  color: #888888;
+  white-space: nowrap;
+}
+
+/* =========================
+   Responsive & Focus
+========================= */
+
+.social-content :is(button, a):focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .social-content { margin: 0 24px; }
+  .social-page .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 0 24px;
+  }
+  .social-page .search-area { grid-column: 1; }
+  .social-page .auth-buttons { grid-column: 2; }
+}
+
+@media (max-width: 700px) {
+  .social-page { flex-direction: column; height: 100vh; }
+  .social-page .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    max-height: 180px;
+    padding: 12px;
+    border-radius: 0;
+  }
+  .social-page .site-info { margin-bottom: 12px; }
+  .social-page .site-info img { width: 28px; height: 28px; }
+  .social-page .sidebar-menu { flex-direction: row; align-items: flex-start; overflow-x: auto; }
+  .social-page .menu-group { flex-shrink: 0; min-width: 110px; }
+  .social-main-area { height: auto; min-height: 0; }
+  .social-page .header {
+    height: auto;
+    min-height: 125px;
+    padding: 16px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .social-page .auth-buttons { grid-column: 1; }
+  .social-content { margin: 0 16px; }
+  .social-heading { align-items: flex-start; }
+  .social-login-message h2 { font-size: 21px; }
+  .social-login-notice { min-height: 480px; }
+}

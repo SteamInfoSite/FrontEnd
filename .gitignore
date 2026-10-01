@@ -25,3 +25,7 @@ dist-ssr
 
 /.backend-inspect/
 /BackEnd-main/
+/BackEnd/
+/HTML_IDS.md
+/docs/board-db-design.md
+/docs/board-schema-draft.sql
