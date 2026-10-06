@@ -156,6 +156,56 @@ export async function getGamesByPrice({
     totalCount: data.totalCount,
   };
 }
+// Steam 설명에 포함된 HTML 태그를 화면 표시용 텍스트로 변환
+function toGameText(value) {
+  const text = String(value ?? "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]*>/g, "");
+
+  const decoder = document.createElement("textarea");
+  decoder.innerHTML = text;
+
+  return decoder.value;
+}
+
+//실제 게임 상세 정보 조회
+export async function getGameDetail(appId, { signal } = {}) {
+  const response = await fetch(
+    `/api/games/${encodeURIComponent(appId)}`,
+    {
+      method: "GET",
+      signal,
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error("게임 상세 정보를 불러오지 못했습니다.");
+    error.status = response.status;
+    throw error;
+  }
+
+  const data = await response.json();
+
+  return {
+    ...data,
+    id: data.appId,
+    title: data.gameName,
+    image: data.headerImage || data.capsuleImage || null,
+
+    shortDescription: toGameText(data.shortDescription),
+    supportedLanguages:
+      toGameText(data.supportedLanguages) || "지원 언어 정보 없음",
+
+    developers: data.developers || [],
+    publishers: data.publishers || [],
+    genres: data.genres || [],
+    categories: data.categories || [],
+    platforms: data.platforms || {},
+    movie: data.movie || [],
+
+    recommendationsTotal: data.recommendationsTotal ?? null,
+  };
+}
 
 export async function getGenreGames({
   genre = "all",

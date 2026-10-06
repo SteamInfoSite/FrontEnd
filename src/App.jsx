@@ -35,7 +35,15 @@ function App() {
         <Route path="/games/free" element={<PriceGames mode="free" />} />
         <Route path="/games/discount" element={<PriceGames mode="discount" />} />
         <Route path="/games/genre" element={<GenreGames />} />
-        <Route path="/games/:appId" element={<GameDetail />} />
+        <Route
+          path="/games/detail/:appId"
+          element={<GameDetail />}
+        />
+
+        <Route
+          path="/games/:appId"
+          element={<GameDetail isExample />}
+        />
         <Route path="/social" element={<Social />} />
         <Route
           path="/"
