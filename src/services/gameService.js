@@ -113,36 +113,47 @@ export async function getUpcomingGames({
 
 export async function getGamesByPrice({
   isFree,
-  genre = "all",
-  platform = "all",
-  sort = "recommendations_desc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
+  if (typeof isFree !== "boolean") {
+    throw new Error("무료 여부를 지정해 주세요.");
+  }
 
-  const filteredGames = mockHotGames
-    .filter((game) => game.isFree === isFree)
-    .filter((game) => genre === "all" || game.genres.includes(genre))
-    .filter((game) => platform === "all" || game.platforms[platform])
-    .sort((first, second) => {
-      if (sort === "title_asc") return first.title.localeCompare(second.title);
-      return second.recommendationsTotal - first.recommendationsTotal || first.id - second.id;
-    })
-    .map((game, index) => ({
-      ...game,
-      genres: [...game.genres],
-      platforms: { ...game.platforms },
-      rank: index + 1,
-    }));
+  const params = new URLSearchParams({
+    isFree: String(isFree),
+    page: String(page),
+    pageSize: String(pageSize),
+  });
 
-  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
-  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
-  const start = (currentPage - 1) * size;
+  const response = await fetch(`/api/games?${params}`, {
+    method: "GET",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("게임 목록을 불러오지 못했습니다.");
+  }
+
+  const data = await response.json();
+
   return {
-    items: filteredGames.slice(start, start + size),
-    totalCount: filteredGames.length,
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      recommendationsTotal: game.recommendationsTotal,
+      isFree: game.isFree,
+      priceText: game.isFree ? "무료" : "스팀에서 가격 확인",
+
+      //현재 정렬에서의 표시 번호 인기 순위가 아님
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
   };
 }
 

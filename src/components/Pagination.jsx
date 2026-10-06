@@ -5,7 +5,14 @@ function Pagination({
 }) {
   const pages = [];
 
-  for (let i = 1; i <= totalPages; i++) {
+  const startPage = Math.max(
+    1,
+    Math.min(currentPage - 2, totalPages - 4)
+  );
+
+  const endPage = Math.min(totalPages, startPage + 4);
+
+  for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
 
