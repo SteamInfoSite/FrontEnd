@@ -17,11 +17,19 @@ function PriceGames({ mode }) {
   const title = isDiscount ? "Discount" : isFree ? "Free game" : "Pay-to-play";
   const description = isDiscount ? "할인 중인 게임과 할인율을 확인하세요." : isFree ? "무료로 플레이할 수 있는 게임을 확인하세요." : "유료로 판매 중인 게임을 확인하세요.";
   const [searchParams, setSearchParams] = useSearchParams();
-  const genre = hotGameGenres.includes(searchParams.get("genre")) ? searchParams.get("genre") : "all";
-  const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";
+  const genre = isDiscount && hotGameGenres.includes(searchParams.get("genre"))
+      ? searchParams.get("genre")
+      : "all";
+  const platform = isDiscount && hotGamePlatforms.some(
+      (item) => item.value === searchParams.get("platform")
+    )
+      ? searchParams.get("platform")
+      : "all";
   const sort = isDiscount
-    ? (searchParams.get("sort") === "title_asc" ? "title_asc" : "discount_desc")
-    : (searchParams.get("sort") === "title_asc" ? "title_asc" : "recommendations_desc");
+    ? searchParams.get("sort") === "title_asc"
+      ? "title_asc"
+      : "discount_desc"
+    : "app_id_asc";
   const requestedPage = Number(searchParams.get("page"));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const requestKey = JSON.stringify([prefix, genre, platform, sort, page]);
@@ -53,7 +61,7 @@ function PriceGames({ mode }) {
         if (!controller.signal.aborted) setResult({ key: requestKey, status: "error", items: [], totalCount: 0 });
       });
     return () => controller.abort();
-  }, [isFree, genre, platform, sort, page, requestKey, retry, setSearchParams]);
+  }, [isDiscount, isFree, genre, platform, sort, page, requestKey, retry, setSearchParams]);
 
   const changeFilter = (name, value) => {
     const next = new URLSearchParams(searchParams);
@@ -76,22 +84,56 @@ function PriceGames({ mode }) {
         <main id={`${prefix}_games_content`} className="hot-games-content">
           <div className="hot-games-heading">
             <div><h1>{title}</h1><p>{description}</p></div>
-            <span className="hot-games-example">예시 데이터</span>
+            {isDiscount && (
+              <span className="hot-games-example">예시 데이터</span>
+            )}
           </div>
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
-              <select id={`${prefix}_genre_select`} aria-label="장르" value={genre} onChange={(event) => changeFilter("genre", event.target.value)}>
+              <select
+                id={`${prefix}_genre_select`}
+                aria-label="장르"
+                value={genre}
+                disabled={!isDiscount}
+                onChange={(event) => changeFilter("genre", event.target.value)}
+              >
                 <option value="all">전체 장르</option>
-                {hotGameGenres.map((item) => <option key={item} value={item}>{item}</option>)}
+                {hotGameGenres.map((item) => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
               </select>
-              <select id={`${prefix}_platform_select`} aria-label="플랫폼" value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
+
+              <select
+                id={`${prefix}_platform_select`}
+                aria-label="플랫폼"
+                value={platform}
+                disabled={!isDiscount}
+                onChange={(event) => changeFilter("platform", event.target.value)}
+              >
                 <option value="all">모든 플랫폼</option>
-                {hotGamePlatforms.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                {hotGamePlatforms.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
               </select>
             </div>
-            <select id={`${prefix}_sort_select`} aria-label="정렬" value={sort} onChange={(event) => changeFilter("sort", event.target.value)}>
-              <option value={isDiscount ? "discount_desc" : "recommendations_desc"}>{isDiscount ? "할인율 높은 순" : "추천 수 높은 순"}</option>
-              <option value="title_asc">이름순</option>
+
+            <select
+              id={`${prefix}_sort_select`}
+              aria-label="정렬"
+              value={sort}
+              disabled={!isDiscount}
+              onChange={(event) => changeFilter("sort", event.target.value)}
+            >
+              {isDiscount ? (
+                <>
+                  <option value="discount_desc">할인율 높은 순</option>
+                  <option value="title_asc">이름순</option>
+                </>
+              ) : (
+                <option value="app_id_asc">게임 ID 순</option>
+              )}
             </select>
           </div>
 
@@ -101,7 +143,13 @@ function PriceGames({ mode }) {
             {status === "success" && result.totalCount === 0 && <div id={`${prefix}_games_empty`} className="hot-games-state" role="status"><p>조건에 맞는 게임이 없습니다.</p><button id={`${prefix}_filters_reset_button`} type="button" onClick={() => setSearchParams({})}>필터 초기화</button></div>}
             {status === "success" && result.totalCount > 0 && <>
               <table id={`${prefix}_game_list`} className="hot-games-table price-games-table" aria-label={`${title} 목록`}>
-                <thead><tr><th scope="col">순위</th><th scope="col">게임명 / 장르</th><th scope="col">{isDiscount ? "할인 가격" : "가격"}</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th scope="col">{isDiscount ? "순위" : "번호"}</th>
+                    <th scope="col">게임명 / 장르</th>
+                    <th scope="col">{isDiscount ? "할인 가격" : "가격"}</th>
+                  </tr>
+                </thead>
                 <tbody>{result.items.map((game) => <tr id={`${prefix}_game_item_${game.id}`} key={game.id}>
                   <td className="hot-game-rank">{game.rank}</td>
                   <td><Link className="hot-game-link" to={`/games/${game.id}`}><span className="hot-game-image">{game.image ? <img src={game.image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null}<span>게임 이미지</span></span><span className="hot-game-description"><strong>{game.title}</strong><span>{game.genres.join(" · ")} · {hotGamePlatforms.filter((item) => game.platforms[item.value]).map((item) => item.label).join(" / ")}</span></span></Link></td>
