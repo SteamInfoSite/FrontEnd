@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Pagination from "../components/Pagination";
@@ -11,6 +10,8 @@ import "../styles/HotGames.css";
 const PAGE_SIZE = 10;
 
 function PriceGames({ mode }) {
+  const navigate = useNavigate();
+
   const isFree = mode === "free";
   const isDiscount = mode === "discount";
   const prefix = isDiscount ? "discount" : isFree ? "free" : "paid";
@@ -152,11 +153,54 @@ function PriceGames({ mode }) {
                 </thead>
                 <tbody>{result.items.map((game) => <tr id={`${prefix}_game_item_${game.id}`} key={game.id}>
                   <td className="hot-game-rank">{game.rank}</td>
-                  <td><Link className="hot-game-link" to={`/games/${game.id}`}><span className="hot-game-image">{game.image ? <img src={game.image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null}<span>게임 이미지</span></span><span className="hot-game-description"><strong>{game.title}</strong><span>{game.genres.join(" · ")} · {hotGamePlatforms.filter((item) => game.platforms[item.value]).map((item) => item.label).join(" / ")}</span></span></Link></td>
+                  <td>
+                    <button
+                      type="button"
+                      className="hot-game-link"
+                      aria-label={`${game.title} 상세 정보 보기`}
+                      onClick={() => navigate(`/games/${game.id}`)}
+                    >
+                      <span className="hot-game-image">
+                        {game.image ? (
+                          <img
+                            src={game.image}
+                            alt=""
+                            onError={(event) => {
+                              event.currentTarget.hidden = true;
+                            }}
+                          />
+                        ) : null}
+                        <span>게임 이미지</span>
+                      </span>
+
+                      <span className="hot-game-description">
+                        <strong>{game.title}</strong>
+                        <span>
+                          {game.genres.join(" · ")}
+                          {" · "}
+                          {hotGamePlatforms
+                            .filter((item) => game.platforms[item.value])
+                            .map((item) => item.label)
+                            .join(" / ")}
+                        </span>
+                      </span>
+                    </button>
+                  </td>
                   <td className="price-game-value">{isDiscount ? `-${game.discountPercent}% ${game.priceText}` : game.priceText}</td>
                 </tr>)}</tbody>
               </table>
-              <nav id={`${prefix}_game_pagination`} className="hot-game-pagination" aria-label={`${title} 목록 페이지`}><button id={`${prefix}_page_prev_button`} type="button" disabled={page === 1} onClick={() => changePage(page - 1)}>이전</button><Pagination currentPage={page} totalPages={totalPages} onPageChange={changePage} /><button id={`${prefix}_page_next_button`} type="button" disabled={page === totalPages} onClick={() => changePage(page + 1)}>다음</button></nav>
+              <nav
+                id={`${prefix}_game_pagination`}
+                className="hot-game-pagination"
+                aria-label={`${title} 목록 페이지`}
+              >
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={changePage}
+                  groupNavigation
+                />
+              </nav>
               <p className="hot-games-total" role="status">전체 {result.totalCount}개 · {page} / {totalPages} 페이지</p>
             </>}
           </div>

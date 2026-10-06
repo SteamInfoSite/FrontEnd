@@ -369,3 +369,18 @@
     font-size: 15px;
   }
 }
+
+  .price-games-page button.hot-game-link {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .price-games-page button.hot-game-link:focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 4px;
+  }
