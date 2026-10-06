@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getGameDetail } from "../services/gameService";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { useRequireLogin } from "../hooks/useRequireLogin";
 
@@ -8,30 +9,110 @@ import { mockGameDetails } from "../mocks/gameDetailMockData";
 
 import "../styles/GameDetail.css";
 
-function GameDetail() {
+function GameDetail({ isExample = false }) {
   const { appId } = useParams();
-  return <GameDetailContent key={appId} appId={appId} />;
+
+  return (
+    <GameDetailContent
+      key={`${isExample}-${appId}`}
+      appId={appId}
+      isExample={isExample}
+    />
+  );
 }
 
-function GameDetailContent({ appId }) {
+function GameDetailContent({ appId, isExample }) {
   const { hash } = useLocation();
   const requireLogin = useRequireLogin();
   const [selectedImage, setSelectedImage] = useState(0);
-  const game = mockGameDetails.find(
-    (item) => item.id === Number(appId)
-  );
+
+  const [result, setResult] = useState({
+    status: "loading",
+    game: null,
+  });
+
+  const [retry, setRetry] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    setResult({
+      status: "loading",
+      game: null,
+    });
+
+    const request = isExample
+      ? Promise.resolve(
+          mockGameDetails.find(
+            (item) => item.id === Number(appId)
+          )
+        )
+      : getGameDetail(appId, {
+          signal: controller.signal,
+        });
+
+    request
+      .then((game) => {
+        if (controller.signal.aborted) return;
+
+        setResult({
+          status: game ? "success" : "missing",
+          game: game || null,
+        });
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+
+        setResult({
+          status: error.status === 404 ? "missing" : "error",
+          game: null,
+        });
+      });
+
+    return () => controller.abort();
+  }, [appId, isExample, retry]);
+
+  const game = result.game;
 
   if (!game) {
     return (
       <div className="game-detail-page">
         <Sidebar />
+
         <div className="game-detail-main-area">
           <Header />
+
           <main className="game-detail-content">
-            <div className="game-detail-not-found">
-              <h1>게임 정보를 찾을 수 없습니다.</h1>
-              <p>주소를 확인하거나 홈에서 게임을 다시 선택해 주세요.</p>
-              <Link to="/">홈으로 돌아가기</Link>
+            <div
+              className="game-detail-not-found"
+              role={
+                result.status === "error" ? "alert" : "status"
+              }
+            >
+              <h1>
+                {result.status === "loading"
+                  ? "게임 정보를 불러오는 중입니다."
+                  : result.status === "missing"
+                    ? "게임 정보를 찾을 수 없습니다."
+                    : "게임 정보를 불러오지 못했습니다."}
+              </h1>
+
+              {result.status === "error" && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRetry((value) => value + 1)
+                  }
+                >
+                  다시 시도
+                </button>
+              )}
+
+              {result.status !== "loading" && (
+                <p>
+                  <Link to="/">홈으로 돌아가기</Link>
+                </p>
+              )}
             </div>
           </main>
         </div>
@@ -51,11 +132,14 @@ function GameDetailContent({ appId }) {
   const publisherText = game.publishers.length
     ? game.publishers.join(", ")
     : "배급사 정보 없음";
-  const images = [...new Set([game.image, ...(game.screenshots || [])])];
+  const images = [
+    ...new Set(
+      [game.image, ...(game.screenshots || [])].filter(Boolean)
+    ),
+  ];
   const detailMenus = [
     { id: "game_introduction", label: "게임 소개" },
     { id: "game_reviews", label: "유저 평가" },
-    { id: "game_requirements", label: "시스템 요구사항" },
     { id: "game_video_section", label: "영상" },
   ];
 
@@ -86,11 +170,18 @@ function GameDetailContent({ appId }) {
 
           <section className="game-detail-summary">
             <div className="game-detail-media">
-              <img
-                className="game-main-image"
-                src={images[selectedImage]}
-                alt={`${game.title} 대표 이미지`}
-              />
+              {images.length > 0 ? (
+                <img
+                  className="game-main-image"
+                  src={images[selectedImage]}
+                  alt={`${game.title} 대표 이미지`}
+                  onError={(event) => {
+                    event.currentTarget.hidden = true;
+                  }}
+                />
+              ) : (
+                <p>등록된 게임 이미지가 없습니다.</p>
+              )}
 
               <div className="game-media-list">
                 {images.map((image, index) => (
@@ -190,15 +281,6 @@ function GameDetailContent({ appId }) {
               : `Steam 추천 ${game.recommendationsTotal.toLocaleString()}개`}</p>
           </section>
 
-          <section id="game_requirements" className="game-detail-section game-extra-section">
-            <h2>시스템 요구사항</h2>
-            <div className="game-requirements-grid">
-              <div><h3>최소 사양</h3><p>{game.requirements?.minimum || "최소 사양 정보가 제공되지 않았습니다."}</p></div>
-              <div><h3>권장 사양</h3><p>{game.requirements?.recommended || "권장 사양 정보가 제공되지 않았습니다."}</p></div>
-            </div>
-            <p className="game-requirements-note">구매 또는 설치 전 Steam 스토어에서 시스템 요구사항을 확인해 주세요.</p>
-          </section>
-
           <section id="game_video_section" className="game-detail-section game-video-section">
             <h2>영상</h2>
             {game.movie.length > 0 ? (
@@ -209,10 +291,17 @@ function GameDetailContent({ appId }) {
                   </a>
                 ))}
               </div>
-            ) : <p>등록된 게임 영상이 없습니다.</p>}
+            ) : (
+              <p>{game.title}의 제공된 영상 정보가 없습니다.</p>
+            )}
           </section>
 
-          <p className="game-detail-source">현재 게임 정보는 목업 데이터입니다. 이미지 출처: Steam</p>
+          <p className="game-detail-source">
+            {isExample
+              ? "현재 게임 정보는 예시 데이터입니다."
+              : "Steam에서 수집한 게임 정보입니다."}
+            {" · 이미지 출처: Steam"}
+          </p>
         </main>
       </div>
     </div>

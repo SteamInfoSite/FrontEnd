@@ -158,7 +158,13 @@ function PriceGames({ mode }) {
                       type="button"
                       className="hot-game-link"
                       aria-label={`${game.title} 상세 정보 보기`}
-                      onClick={() => navigate(`/games/${game.id}`)}
+                      onClick={() =>
+                        navigate(
+                          isDiscount
+                            ? `/games/${game.id}`
+                            : `/games/detail/${game.appId}`
+                        )
+                      }
                     >
                       <span className="hot-game-image">
                         {game.image ? (
