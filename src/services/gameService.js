@@ -113,6 +113,9 @@ export async function getUpcomingGames({
 
 export async function getGamesByPrice({
   isFree,
+  genre = "all",
+  platform = "all",
+  sort = "app_id_asc",
   page = 1,
   pageSize = 10,
   signal,
@@ -123,6 +126,9 @@ export async function getGamesByPrice({
 
   const params = new URLSearchParams({
     isFree: String(isFree),
+    genre,
+    platform,
+    sort,
     page: String(page),
     pageSize: String(pageSize),
   });
@@ -146,11 +152,11 @@ export async function getGamesByPrice({
       image: game.headerImage || game.capsuleImage || null,
       genres: game.genres || [],
       platforms: game.platforms || {},
-      recommendationsTotal: game.recommendationsTotal,
+      recommendationsTotal: game.recommendationsTotal ?? null,
       isFree: game.isFree,
       priceText: game.isFree ? "무료" : "스팀에서 가격 확인",
 
-      //현재 정렬에서의 표시 번호 인기 순위가 아님
+      //현재 조회 조건과 정렬에서의 표시 번호
       rank: (data.page - 1) * data.pageSize + index + 1,
     })),
     totalCount: data.totalCount,
@@ -207,36 +213,50 @@ export async function getGameDetail(appId, { signal } = {}) {
   };
 }
 
+//선택한 장르에 해당하는 실제 게임 목록
 export async function getGenreGames({
   genre = "all",
   platform = "all",
-  sort = "recommendations_desc",
+  sort = "app_id_asc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
+    const params = new URLSearchParams({
+      genre,
+      platform,
+      sort,
+      page: String(page),
+      pageSize: String(pageSize),
+    });
 
-  const filteredGames = mockHotGames
-    .filter((game) => genre === "all" || game.genres.includes(genre))
-    .filter((game) => platform === "all" || game.platforms[platform])
-    .sort((first, second) => {
-      if (sort === "title_asc") return first.title.localeCompare(second.title);
-      return second.recommendationsTotal - first.recommendationsTotal || first.id - second.id;
-    })
-    .map((game, index) => ({
-      ...game,
-      genres: [...game.genres],
-      platforms: { ...game.platforms },
-      rank: index + 1,
-    }));
+    //이 요청 부분이 빠져 있었어
+    const response = await fetch(`/api/games/by-genre?${params}`, {
+      method: "GET",
+      signal,
+    });
 
-  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
-  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
-  const start = (currentPage - 1) * size;
+    if (!response.ok) {
+      throw new Error("장르별 게임 목록을 불러오지 못했습니다.");
+    }
+
+    const data = await response.json();
+
   return {
-    items: filteredGames.slice(start, start + size),
-    totalCount: filteredGames.length,
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      recommendationsTotal: game.recommendationsTotal ?? null,
+      isFree: game.isFree,
+
+      //현재 조회 조건과 정렬에서의 표시 번호
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
   };
 }
 
@@ -272,4 +292,16 @@ export async function getDiscountGames({
     items: filteredGames.slice(start, start + size),
     totalCount: filteredGames.length,
   };
+}
+//장르 선택창에 표시할 영문 장르 목록
+export async function getGameGenres({ signal } = {}) {
+  const response = await fetch("/api/games/genres", {
+    method: "GET",
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error("장르 목록을 불러오지 못했습니다");
+  }
+
+  return response.json();
 }
