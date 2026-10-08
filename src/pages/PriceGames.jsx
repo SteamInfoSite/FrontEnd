@@ -3,7 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Pagination from "../components/Pagination";
-import { getDiscountGames, getGamesByPrice, hotGameGenres, hotGamePlatforms } from "../services/gameService";
+import {
+  getDiscountGames,
+  getGamesByPrice,
+  hotGamePlatforms,
+} from "../services/gameService";
 
 import "../styles/HotGames.css";
 
@@ -18,19 +22,22 @@ function PriceGames({ mode }) {
   const title = isDiscount ? "Discount" : isFree ? "Free game" : "Pay-to-play";
   const description = isDiscount ? "할인 중인 게임과 할인율을 확인하세요." : isFree ? "무료로 플레이할 수 있는 게임을 확인하세요." : "유료로 판매 중인 게임을 확인하세요.";
   const [searchParams, setSearchParams] = useSearchParams();
-  const genre = isDiscount && hotGameGenres.includes(searchParams.get("genre"))
-      ? searchParams.get("genre")
-      : "all";
-  const platform = isDiscount && hotGamePlatforms.some(
-      (item) => item.value === searchParams.get("platform")
-    )
-      ? searchParams.get("platform")
-      : "all";
+  const genre = "all";
+  const requestedPlatform = searchParams.get("platform");
+  const platform = hotGamePlatforms.some(
+    (item) => item.value === requestedPlatform
+  )
+    ? requestedPlatform
+    : "all";
+  const requestedSort = searchParams.get("sort");
   const sort = isDiscount
-    ? searchParams.get("sort") === "title_asc"
+    ? requestedSort === "title_asc"
       ? "title_asc"
       : "discount_desc"
-    : "app_id_asc";
+    : ["app_id_asc", "title_asc", "recommendations_desc"]
+        .includes(requestedSort)
+      ? requestedSort
+      : "app_id_asc";
   const requestedPage = Number(searchParams.get("page"));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const requestKey = JSON.stringify([prefix, genre, platform, sort, page]);
@@ -91,27 +98,17 @@ function PriceGames({ mode }) {
           </div>
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
-              <select
-                id={`${prefix}_genre_select`}
-                aria-label="장르"
-                value={genre}
-                disabled={!isDiscount}
-                onChange={(event) => changeFilter("genre", event.target.value)}
-              >
-                <option value="all">전체 장르</option>
-                {hotGameGenres.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
 
               <select
                 id={`${prefix}_platform_select`}
                 aria-label="플랫폼"
                 value={platform}
-                disabled={!isDiscount}
-                onChange={(event) => changeFilter("platform", event.target.value)}
+                onChange={(event) =>
+                  changeFilter("platform", event.target.value)
+                }
               >
                 <option value="all">모든 플랫폼</option>
+
                 {hotGamePlatforms.map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
@@ -124,8 +121,9 @@ function PriceGames({ mode }) {
               id={`${prefix}_sort_select`}
               aria-label="정렬"
               value={sort}
-              disabled={!isDiscount}
-              onChange={(event) => changeFilter("sort", event.target.value)}
+              onChange={(event) =>
+                changeFilter("sort", event.target.value)
+              }
             >
               {isDiscount ? (
                 <>
@@ -133,7 +131,11 @@ function PriceGames({ mode }) {
                   <option value="title_asc">이름순</option>
                 </>
               ) : (
-                <option value="app_id_asc">게임 ID 순</option>
+                <>
+                  <option value="app_id_asc">게임 ID 순</option>
+                  <option value="recommendations_desc">추천 수 높은 순</option>
+                  <option value="title_asc">이름순</option>
+                </>
               )}
             </select>
           </div>

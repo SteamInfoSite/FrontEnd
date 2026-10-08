@@ -4,7 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Pagination from "../components/Pagination";
-import { getUpcomingGames, hotGameGenres, hotGamePlatforms } from "../services/gameService";
+import { getUpcomingGames, hotGamePlatforms } from "../services/gameService";
 
 import "../styles/HotGames.css";
 
@@ -12,7 +12,7 @@ const PAGE_SIZE = 10;
 
 function UpcomingGames() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const genre = hotGameGenres.includes(searchParams.get("genre")) ? searchParams.get("genre") : "all";
+  const genre = "all";
   const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";
   const sort = searchParams.get("sort") === "released_desc" ? "released_desc" : "released_asc";
   const requestedPage = Number(searchParams.get("page"));
@@ -74,10 +74,6 @@ function UpcomingGames() {
 
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
-              <select id="upcoming_genre_select" aria-label="장르" value={genre} onChange={(event) => changeFilter("genre", event.target.value)}>
-                <option value="all">전체 장르</option>
-                {hotGameGenres.map((item) => <option key={item} value={item}>{item}</option>)}
-              </select>
               <select id="upcoming_platform_select" aria-label="플랫폼" value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
                 <option value="all">모든 플랫폼</option>
                 {hotGamePlatforms.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
