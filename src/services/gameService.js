@@ -9,6 +9,24 @@ export const hotGamePlatforms = [
   { value: "linux", label: "Linux" },
 ];
 
+function getGamePriceText(game) {
+  if (game.isFree === true) {
+    return "무료";
+  }
+
+  const price = game.price;
+
+  if (
+    price?.priceAvailable === true &&
+    typeof price.finalFormatted === "string" &&
+    price.finalFormatted.trim()
+  ) {
+    return price.finalFormatted;
+  }
+
+  return "스팀에서 가격 확인";
+}
+
 //저장된 스팀 추천 수 내림차순으로 인기 게임 조회
 export async function getHotGames({
   platform = "all",
@@ -42,6 +60,7 @@ export async function getHotGames({
       genres: game.genres || [],
       platforms: game.platforms || {},
       recommendationsTotal: game.recommendationsTotal ?? null,
+      price: game.price ?? null,
 
       //현재 플랫폼 필터 결과에서의 표시 순서
       rank: (data.page - 1) * data.pageSize + index + 1,
@@ -159,7 +178,8 @@ export async function getGamesByPrice({
       platforms: game.platforms || {},
       recommendationsTotal: game.recommendationsTotal ?? null,
       isFree: game.isFree,
-      priceText: game.isFree ? "무료" : "스팀에서 가격 확인",
+      price: game.price ?? null,
+      priceText: getGamePriceText(game),
 
       //현재 조회 조건과 정렬에서의 표시 번호
       rank: (data.page - 1) * data.pageSize + index + 1,
@@ -261,6 +281,7 @@ export async function getGenreGames({
       platforms: game.platforms || {},
       recommendationsTotal: game.recommendationsTotal ?? null,
       isFree: game.isFree,
+      price: game.price ?? null,
 
       //현재 조회 조건과 정렬에서의 표시 번호
       rank: (data.page - 1) * data.pageSize + index + 1,
