@@ -9,39 +9,44 @@ export const hotGamePlatforms = [
   { value: "linux", label: "Linux" },
 ];
 
-// API 연결 시 이 함수 내부를 fetch 요청과 응답 변환으로 교체합니다.
-// 반환 규약: { items: [{ id, title, image, genres, platforms, recommendationsTotal, rank }], totalCount }
-// rank는 필터 결과 내 추천 수 내림차순 순위이며, 표시 순서/페이지와 무관하게 유지합니다.
-// 실제 Steam appId 및 서버 필드명은 백엔드 명세에 맞춰 변환합니다.
+//저장된 스팀 추천 수 내림차순으로 인기 게임 조회
 export async function getHotGames({
-  genre = "all",
   platform = "all",
-  sort = "recommendations_desc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
+  const params = new URLSearchParams({
+    platform,
+    page: String(page),
+    pageSize: String(pageSize),
+  });
 
-  const filteredGames = mockHotGames
-    .filter((game) => genre === "all" || game.genres.includes(genre))
-    .filter((game) => platform === "all" || game.platforms[platform])
-    .sort((a, b) => b.recommendationsTotal - a.recommendationsTotal || a.id - b.id)
-    .map((game, index) => ({
-      ...game,
-      genres: [...game.genres],
-      platforms: { ...game.platforms },
-      rank: index + 1,
-    }));
+  const response = await fetch(`/api/games/hot?${params}`, {
+    method: "GET",
+    signal,
+  });
 
-  if (sort === "recommendations_asc") filteredGames.reverse();
+  if (!response.ok) {
+    throw new Error("인기 게임 목록을 불러오지 못했습니다.");
+  }
 
-  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
-  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
-  const start = (currentPage - 1) * size;
+  const data = await response.json();
+
   return {
-    items: filteredGames.slice(start, start + size),
-    totalCount: filteredGames.length,
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      recommendationsTotal: game.recommendationsTotal ?? null,
+
+      //현재 플랫폼 필터 결과에서의 표시 순서
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
   };
 }
 
@@ -200,7 +205,11 @@ export async function getGameDetail(appId, { signal } = {}) {
 
     shortDescription: toGameText(data.shortDescription),
     supportedLanguages:
-      toGameText(data.supportedLanguages) || "지원 언어 정보 없음",
+      toGameText(data.supportedLanguages)
+        .replace(/\*+\s*languages with full audio support/gi, "")
+        .replace(/\*/g, "")
+        .replace(/\s+/g, " ")
+        .trim() || "지원 언어 정보 없음",
 
     developers: data.developers || [],
     publishers: data.publishers || [],

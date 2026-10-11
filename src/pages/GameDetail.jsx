@@ -266,10 +266,6 @@ function GameDetailContent({ appId, isExample }) {
               <dl className="game-detail-info-list">
                 <div><dt>플랫폼</dt><dd>{platformNames.join(", ") || "플랫폼 정보 없음"}</dd></div>
                 <div><dt>지원 언어</dt><dd>{game.supportedLanguages}</dd></div>
-                <div>
-                  <dt>Steam 추천</dt>
-                  <dd>{game.recommendationsTotal === null ? "추천 수 정보 없음" : `${game.recommendationsTotal.toLocaleString()}개`}</dd>
-                </div>
               </dl>
             </section>
           </div>
