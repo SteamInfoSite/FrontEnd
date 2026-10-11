@@ -191,8 +191,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.price-games-table th:last-child {
-  width: 132px;
+.hot-games-table.price-games-table th:last-child {
+  width: 170px;
 }
 
 .price-game-value {
@@ -200,6 +200,7 @@
   font-size: 14px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -400,3 +401,14 @@
     outline: 2px solid #7c3aed;
     outline-offset: 4px;
   }
+
+.hot-games-page button.hot-game-link {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
