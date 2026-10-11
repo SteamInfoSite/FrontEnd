@@ -125,7 +125,9 @@ function GameDetailContent({ appId, isExample }) {
   if (game.platforms.mac) platformNames.push("macOS");
   if (game.platforms.linux) platformNames.push("Linux");
 
-  const priceText = game.isFree ? "무료 플레이" : "유료 게임";
+  const priceText = game.isFree
+    ? "무료 플레이"
+    : game.priceText || "스팀에서 가격 확인";
   const developerText = game.developers.length
     ? game.developers.join(", ")
     : "개발사 정보 없음";
