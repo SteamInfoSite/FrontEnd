@@ -222,6 +222,8 @@ export async function getGameDetail(appId, { signal } = {}) {
     id: data.appId,
     title: data.gameName,
     image: data.headerImage || data.capsuleImage || null,
+    price: data.price ?? null,
+    priceText: getGamePriceText(data),
 
     shortDescription: toGameText(data.shortDescription),
     supportedLanguages:
