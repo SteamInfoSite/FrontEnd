@@ -412,3 +412,38 @@
   text-align: left;
   cursor: pointer;
 }
+
+.discount-game-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.discount-game-original {
+  color: #737373;
+  font-size: 12px;
+}
+
+.discount-game-current {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.discount-game-badge {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #ede9fe;
+  color: #6d28d9;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.discount-game-checked {
+  color: #737373;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 400;
+}

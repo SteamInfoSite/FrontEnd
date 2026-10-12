@@ -13,6 +13,14 @@ import "../styles/HotGames.css";
 
 const PAGE_SIZE = 10;
 
+function formatPriceCheckedAt(value) {
+  if (typeof value !== "string" || !value) {
+    return "확인 시각 없음";
+  }
+  //서버에서 받은 확인 시각을 분 단위까지 표시
+  return value.slice(0, 16).replace("T", " ");
+}
+
 function PriceGames({ mode }) {
   const navigate = useNavigate();
 
@@ -50,7 +58,7 @@ function PriceGames({ mode }) {
     const controller = new AbortController();
     setResult({ key: requestKey, status: "loading", items: [], totalCount: 0 });
     (isDiscount
-      ? getDiscountGames({ genre, platform, sort, page, pageSize: PAGE_SIZE, signal: controller.signal })
+      ? getDiscountGames({ platform, sort, page, pageSize: PAGE_SIZE, signal: controller.signal })
       : getGamesByPrice({ isFree, genre, platform, sort, page, pageSize: PAGE_SIZE, signal: controller.signal }))
       .then((data) => {
         if (controller.signal.aborted) return;
@@ -92,9 +100,6 @@ function PriceGames({ mode }) {
         <main id={`${prefix}_games_content`} className="hot-games-content">
           <div className="hot-games-heading">
             <div><h1>{title}</h1><p>{description}</p></div>
-            {isDiscount && (
-              <span className="hot-games-example">예시 데이터</span>
-            )}
           </div>
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
@@ -127,7 +132,7 @@ function PriceGames({ mode }) {
             >
               {isDiscount ? (
                 <>
-                  <option value="discount_desc">할인율 높은 순</option>
+                  <option value="discount_desc">할인율 인기순</option>
                   <option value="title_asc">이름순</option>
                 </>
               ) : (
@@ -160,13 +165,7 @@ function PriceGames({ mode }) {
                       type="button"
                       className="hot-game-link"
                       aria-label={`${game.title} 상세 정보 보기`}
-                      onClick={() =>
-                        navigate(
-                          isDiscount
-                            ? `/games/${game.id}`
-                            : `/games/detail/${game.appId}`
-                        )
-                      }
+                      onClick={() => navigate(`/games/detail/${game.appId}`)}
                     >
                       <span className="hot-game-image">
                         {game.image ? (
@@ -194,7 +193,39 @@ function PriceGames({ mode }) {
                       </span>
                     </button>
                   </td>
-                  <td className="price-game-value">{isDiscount ? `-${game.discountPercent}% ${game.priceText}` : game.priceText}</td>
+                  <td className="price-game-value">
+                    {isDiscount && game.price?.priceAvailable ? (
+                      <div className="discount-game-price">
+                        {game.price.initialAmount > game.price.finalAmount &&
+                          game.price.initialFormatted?.trim() && (
+                            <s
+                              className="discount-game-original"
+                              aria-label="할인 전 가격"
+                            >
+                              {game.price.initialFormatted}
+                            </s>
+                          )}
+
+                        <div className="discount-game-current">
+                          <span className="discount-game-badge">
+                            -{game.discountPercent}%
+                          </span>
+
+                          <strong>
+                            {game.price.finalAmount === 0 ? "무료" : game.priceText}
+                          </strong>
+                        </div>
+
+                        <small className="discount-game-checked">
+                          가격 확인
+                          <br />
+                          {formatPriceCheckedAt(game.price.priceCheckedAt)}
+                        </small>
+                      </div>
+                    ) : (
+                      game.priceText
+                    )}
+                  </td>
                 </tr>)}</tbody>
               </table>
               <nav
