@@ -160,7 +160,6 @@ function GameDetailContent({ appId, isExample }) {
         <Header />
 
         <main id="game_detail_content" className="game-detail-content">
-          <div className="game-detail-path"><Link to="/">Home</Link> / Game / 게임 상세</div>
 
           <div className="game-detail-heading">
             <div>

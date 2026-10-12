@@ -180,8 +180,21 @@
   font-variant-numeric: tabular-nums;
 }
 
-.new-games-table th:last-child {
+.hot-games-table.new-games-table th:nth-child(3) {
   width: 132px;
+}
+
+.hot-games-table.new-games-table th:last-child {
+  width: 170px;
+}
+
+.new-games-table .new-game-date {
+  white-space: nowrap;
+}
+
+.new-games-page button.hot-game-link:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 4px;
 }
 
 .new-game-date {
