@@ -293,36 +293,46 @@ export async function getGenreGames({
 }
 
 export async function getDiscountGames({
-  genre = "all",
   platform = "all",
   sort = "discount_desc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
+  const params = new URLSearchParams({
+    platform,
+    sort,
+    page: String(page),
+    pageSize: String(pageSize),
+  });
 
-  const filteredGames = mockHotGames
-    .filter((game) => !game.isFree && game.discountPercent > 0)
-    .filter((game) => genre === "all" || game.genres.includes(genre))
-    .filter((game) => platform === "all" || game.platforms[platform])
-    .sort((first, second) => {
-      if (sort === "title_asc") return first.title.localeCompare(second.title);
-      return second.discountPercent - first.discountPercent || second.recommendationsTotal - first.recommendationsTotal;
-    })
-    .map((game, index) => ({
-      ...game,
-      genres: [...game.genres],
-      platforms: { ...game.platforms },
-      rank: index + 1,
-    }));
+  const response = await fetch(`/api/games/discount?${params}`, {
+    method: "GET",
+    signal,
+  });
 
-  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
-  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
-  const start = (currentPage - 1) * size;
+  if (!response.ok) {
+    throw new Error("할인 게임 목록을 불러오지 못했습니다.");
+  }
+
+  const data = await response.json();
+
   return {
-    items: filteredGames.slice(start, start + size),
-    totalCount: filteredGames.length,
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      recommendationsTotal: game.recommendationsTotal ?? null,
+      isFree: game.isFree,
+      price: game.price ?? null,
+      discountPercent: game.price?.discountPercent ?? 0,
+      priceText: getGamePriceText(game),
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
   };
 }
 //장르 선택창에 표시할 영문 장르 목록
