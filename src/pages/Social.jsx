@@ -5,6 +5,9 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../contexts/AuthContext";
 
+import SteamApiKeyPanel from "../components/SteamApiKeyPanel";
+import SteamProfileCard from "../components/SteamProfileCard";
+
 import "../styles/Social.css";
 
 const exampleFriends = [
@@ -29,7 +32,7 @@ const friendFilters = [
 
 function Social() {
   const navigate = useNavigate();
-  const { loggedIn, status } = useAuth();
+  const { loggedIn, status, steamId } = useAuth();
   const [filter, setFilter] = useState("all");
   const visibleFriends = exampleFriends.filter((friend) => {
     if (filter === "online") return friend.status === "online" || friend.status === "playing";
@@ -51,7 +54,7 @@ function Social() {
           <div className="social-heading">
             <div>
               <h1>Social</h1>
-              <p>Steam 친구의 접속 상태와 게임 활동을 확인하세요.</p>
+              <p>내 Steam 프로필과 친구의 접속 상태를 확인하세요.</p>
             </div>
             {loggedIn && status === "ready" && <span className="social-example-label">예시 데이터</span>}
           </div>
@@ -60,6 +63,9 @@ function Social() {
             <p className="social-loading" role="status">로그인 상태를 확인하는 중입니다.</p>
           ) : loggedIn && status === "ready" ? (
             <>
+              <SteamApiKeyPanel key={steamId}>
+                <SteamProfileCard />
+              </SteamApiKeyPanel>
               <section id="social_friend_list" className="social-friends" aria-labelledby="social_friends_title">
                 <div className="social-section-heading">
                   <h2 id="social_friends_title">친구 목록</h2>
