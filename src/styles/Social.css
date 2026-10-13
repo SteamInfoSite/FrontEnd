@@ -504,3 +504,32 @@
     width: 100%;
   }
 }
+.social-friend-avatar {
+  object-fit: cover;
+}
+
+.social-friend-profile > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.social-friends-checked {
+  margin: 12px 0 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.social-friends-message {
+  padding: 24px 0;
+  line-height: 1.6;
+}
+
+.social-profile-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.social-friend-table .social-friend-last-seen {
+  font-size: 12px;
+  line-height: 1.5;
+}
