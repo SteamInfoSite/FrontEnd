@@ -76,10 +76,10 @@ function Sidebar() {
       if (!requireLogin()) {
         return;
       }
-
-      window.alert("Library 기능은 준비 중입니다");
+      navigate("/library");
       return;
     }
+
     if (menuName === "Setting") {
       window.alert("설정 기능은 준비 중입니다");
     }
@@ -100,6 +100,10 @@ function Sidebar() {
 
     if (menuName === "Social") {
       return location.pathname === "/social";
+    }
+
+    if (menuName === "Library") {
+      return location.pathname === "/library";
     }
 
     return false;
