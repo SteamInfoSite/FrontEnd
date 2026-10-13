@@ -460,3 +460,30 @@
   line-height: 1.4;
   font-weight: 400;
 }
+
+.hot-games-table.upcoming-games-table th:last-child {
+  width: 190px;
+}
+
+.upcoming-release-review {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.upcoming-release-review strong {
+  color: #92400e;
+  font-size: 13px;
+}
+
+.upcoming-release-review small {
+  color: #737373;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.upcoming-games-page button.hot-game-link:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 4px;
+}

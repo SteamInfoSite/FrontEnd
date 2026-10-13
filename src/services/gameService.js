@@ -1,5 +1,4 @@
 import { mockHotGames } from "../mocks/hotGameMockData.js";
-import { mockUpcomingGames } from "../mocks/upcomingGameMockData.js";
 
 export const hotGameGenres = ["액션", "전략", "시뮬레이션", "어드벤처", "퍼즐", "스포츠"];
 export const hotGamePlatforms = [
@@ -115,36 +114,51 @@ export async function getNewGames({
   };
 }
 
+//저장된 출시 예정 게임 목록 조회
 export async function getUpcomingGames({
-  genre = "all",
   platform = "all",
   sort = "released_asc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
+  const params = new URLSearchParams({
+    platform,
+    sort,
+    page: String(page),
+    pageSize: String(pageSize),
+  });
 
-  const filteredGames = mockUpcomingGames
-    .filter((game) => genre === "all" || game.genres.includes(genre))
-    .filter((game) => platform === "all" || game.platforms[platform])
-    .sort((first, second) => {
-      const dateOrder = first.releaseDate.localeCompare(second.releaseDate);
-      return sort === "released_desc" ? -dateOrder : dateOrder;
-    })
-    .map((game, index) => ({
-      ...game,
-      genres: [...game.genres],
-      platforms: { ...game.platforms },
-      rank: index + 1,
-    }));
+  const response = await fetch(`/api/games/upcoming?${params}`, {
+    method: "GET",
+    signal,
+  });
 
-  const size = Number.isSafeInteger(pageSize) && pageSize > 0 ? pageSize : 10;
-  const currentPage = Number.isSafeInteger(page) && page > 0 ? page : 1;
-  const start = (currentPage - 1) * size;
+  if (!response.ok) {
+    throw new Error("출시 예정 게임 목록을 불러오지 못했습니다.");
+  }
+
+  const data = await response.json();
+
   return {
-    items: filteredGames.slice(start, start + size),
-    totalCount: filteredGames.length,
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      releaseDate: game.relDate || "출시일 미정",
+      releaseDateNeedsReview: game.releaseDateNeedsReview === true,
+      comingSoon: game.comingSoon,
+      isFree: game.isFree,
+      price: game.price ?? null,
+      priceText: getGamePriceText(game),
+
+      //백엔드에서 정렬된 목록의 표시 번호
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
   };
 }
 

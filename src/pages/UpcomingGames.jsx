@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
@@ -11,13 +11,13 @@ import "../styles/HotGames.css";
 const PAGE_SIZE = 10;
 
 function UpcomingGames() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const genre = "all";
   const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";
   const sort = searchParams.get("sort") === "released_desc" ? "released_desc" : "released_asc";
   const requestedPage = Number(searchParams.get("page"));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
-  const requestKey = JSON.stringify([genre, platform, sort, page]);
+  const requestKey = JSON.stringify([platform, sort, page]);
   const [result, setResult] = useState({ key: "", status: "loading", items: [], totalCount: 0 });
   const [retry, setRetry] = useState(0);
   const status = result.key === requestKey ? result.status : "loading";
@@ -27,7 +27,7 @@ function UpcomingGames() {
     const controller = new AbortController();
     setResult({ key: requestKey, status: "loading", items: [], totalCount: 0 });
 
-    getUpcomingGames({ genre, platform, sort, page, pageSize: PAGE_SIZE, signal: controller.signal })
+    getUpcomingGames({ platform, sort, page, pageSize: PAGE_SIZE, signal: controller.signal })
       .then((data) => {
         if (controller.signal.aborted) return;
         const lastPage = Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE));
@@ -46,7 +46,7 @@ function UpcomingGames() {
       });
 
     return () => controller.abort();
-  }, [genre, platform, sort, page, requestKey, retry, setSearchParams]);
+  }, [platform, sort, page, requestKey, retry, setSearchParams]);
 
   const changeFilter = (name, value) => {
     const next = new URLSearchParams(searchParams);
@@ -68,8 +68,13 @@ function UpcomingGames() {
         <Header />
         <main id="upcoming_games_content" className="hot-games-content">
           <div className="hot-games-heading">
-            <div><h1>Upcoming</h1><p>출시 예정인 게임을 확인하세요.</p></div>
-            <span className="hot-games-example">예시 데이터</span>
+            <div>
+              <h1>Upcoming</h1>
+              <p>
+                출시 예정 게임을 확인하세요. 예정일이 지난 게임과
+                날짜 미정 게임은 뒤쪽에 표시됩니다.
+              </p>
+            </div>
           </div>
 
           <div className="hot-games-filters">
@@ -102,13 +107,18 @@ function UpcomingGames() {
             {status === "success" && result.totalCount > 0 && (
               <>
                 <table id="upcoming_game_list" className="hot-games-table upcoming-games-table" aria-label="출시 예정 게임 목록">
-                  <thead><tr><th scope="col">순위</th><th scope="col">게임명 / 장르</th><th scope="col">출시 예정일</th></tr></thead>
+                  <thead><tr><th scope="col">번호</th><th scope="col">게임명 / 장르</th><th scope="col">출시 예정일</th></tr></thead>
                   <tbody>
                     {result.items.map((game) => (
                       <tr id={`upcoming_game_item_${game.id}`} key={game.id}>
                         <td className="hot-game-rank">{game.rank}</td>
                         <td>
-                          <Link className="hot-game-link" to={`/games/${game.id}`}>
+                          <button
+                            type="button"
+                            className="hot-game-link"
+                            aria-label={`${game.title} 상세 정보 보기`}
+                            onClick={() => navigate(`/games/detail/${game.appId}`)}
+                          >
                             <span className="hot-game-image">
                               {game.image ? <img src={game.image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null}
                               <span>게임 이미지</span>
@@ -117,17 +127,33 @@ function UpcomingGames() {
                               <strong>{game.title}</strong>
                               <span>{game.genres.join(" · ")} · {hotGamePlatforms.filter((item) => game.platforms[item.value]).map((item) => item.label).join(" / ")}</span>
                             </span>
-                          </Link>
+                          </button>
                         </td>
-                        <td className="new-game-date">{game.releaseDate}</td>
+                        <td className="new-game-date">
+                          {game.releaseDateNeedsReview ? (
+                            <div className="upcoming-release-review">
+                              <strong>출시 일정 재확인 필요</strong>
+                              <small>기존 예정일: {game.releaseDate}</small>
+                            </div>
+                          ) : (
+                            game.releaseDate
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <nav id="upcoming_game_pagination" className="hot-game-pagination" aria-label="출시 예정 게임 목록 페이지">
-                  <button id="upcoming_page_prev_button" type="button" disabled={page === 1} onClick={() => changePage(page - 1)}>이전</button>
-                  <Pagination currentPage={page} totalPages={totalPages} onPageChange={changePage} />
-                  <button id="upcoming_page_next_button" type="button" disabled={page === totalPages} onClick={() => changePage(page + 1)}>다음</button>
+                <nav
+                  id="upcoming_game_pagination"
+                  className="hot-game-pagination"
+                  aria-label="출시 예정 게임 목록 페이지"
+                >
+                  <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={changePage}
+                    groupNavigation
+                  />
                 </nav>
                 <p className="hot-games-total" role="status">전체 {result.totalCount}개 · {page} / {totalPages} 페이지</p>
               </>
