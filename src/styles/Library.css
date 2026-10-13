@@ -1,0 +1,147 @@
+.library-games-section {
+  padding-top: 28px;
+}
+
+.library-checked-at {
+  margin: 12px 0 20px;
+  color: #777777;
+  font-size: 13px;
+}
+
+.library-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.library-game-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.library-game-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.library-game-open:disabled {
+  cursor: default;
+}
+
+.library-game-open:not(:disabled):hover h3 {
+  color: #7c3aed;
+}
+
+.library-game-open:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: -3px;
+}
+
+.library-game-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 460 / 215;
+  object-fit: cover;
+  background: #f1edf7;
+}
+
+.library-game-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777777;
+  font-size: 14px;
+}
+
+.library-game-open h3 {
+  margin: 0;
+  padding: 16px 18px 12px;
+  font-size: 17px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.library-game-info {
+  padding: 0 18px 18px;
+}
+
+.library-game-info dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.library-game-info dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.library-game-info dt {
+  flex-shrink: 0;
+  color: #777777;
+}
+
+.library-game-info dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.library-detail-unavailable {
+  margin: 14px 0 0;
+  color: #777777;
+  font-size: 12px;
+}
+
+.library-message {
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+.library-unclassified {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.library-unclassified summary {
+  width: fit-content;
+  color: #555555;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.library-unclassified summary:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 4px;
+}
+
+.library-unclassified > p {
+  margin: 16px 0;
+  color: #777777;
+  font-size: 14px;
+}
+
+.library-page .social-profile-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .library-game-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -4,6 +4,8 @@ import {
   Route,
 } from "react-router-dom";
 
+import Library from "./pages/Library";
+
 import Home from "./pages/Home";
 import Board from "./pages/Board";
 import BoardDetail from "./pages/BoardDetail";
@@ -45,6 +47,7 @@ function App() {
           element={<GameDetail isExample />}
         />
         <Route path="/social" element={<Social />} />
+        <Route path="/library" element={<Library />} />
         <Route
           path="/"
           element={<Home />}

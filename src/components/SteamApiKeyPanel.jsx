@@ -4,7 +4,10 @@ import {
   registerSteamApiKey,
 } from "../services/steamApiKeyService";
 
-function SteamApiKeyPanel({ children }) {
+function SteamApiKeyPanel({
+  children,
+  description = "프로필과 친구 정보를 조회하려면 API 키를 등록해 주세요.",
+}) {
   const [loadStatus, setLoadStatus] = useState("loading");
   const [usable, setUsable] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -121,7 +124,7 @@ function SteamApiKeyPanel({ children }) {
       aria-labelledby="steam_api_key_title"
     >
       <h2 id="steam_api_key_title">Steam API 키 등록</h2>
-      <p>프로필과 친구 정보를 조회하려면 API 키를 등록해 주세요.</p>
+      <p>{description}</p>
 
       <a
         href="https://steamcommunity.com/dev/apikey"
