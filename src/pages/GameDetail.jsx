@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { getGameDetail } from "../services/gameService";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useRequireLogin } from "../hooks/useRequireLogin";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { mockGameDetails } from "../mocks/gameDetailMockData";
+import GameMovieCard from "../components/GameMovieCard";
 
 import "../styles/GameDetail.css";
 
@@ -23,7 +23,6 @@ function GameDetail({ isExample = false }) {
 
 function GameDetailContent({ appId, isExample }) {
   const { hash } = useLocation();
-  const requireLogin = useRequireLogin();
   const [selectedImage, setSelectedImage] = useState(0);
 
   const [result, setResult] = useState({
@@ -145,13 +144,6 @@ function GameDetailContent({ appId, isExample }) {
     { id: "game_video_section", label: "영상" },
   ];
 
-  const handleWishlist = () => {
-    if (!requireLogin()) {
-      return;
-    }
-    window.alert("찜 목록 기능은 준비 중입니다");
-  };
-
   return (
     <div className="game-detail-page">
       <Sidebar />
@@ -225,14 +217,6 @@ function GameDetailContent({ appId, isExample }) {
               >
                 {game.appId ? "Steam 스토어에서 보기" : "Steam 스토어에서 검색"}
               </a>
-              <button
-                id="game_wishlist_button"
-                className="game-wishlist-button"
-                type="button"
-                onClick={handleWishlist}
-              >
-                ♡ 찜 목록에 추가
-              </button>
             </div>
           </section>
 
@@ -282,10 +266,13 @@ function GameDetailContent({ appId, isExample }) {
             <h2>영상</h2>
             {game.movie.length > 0 ? (
               <div className="game-video-list">
-                {game.movie.map((movieUrl, index) => (
-                  <a key={movieUrl} href={movieUrl} target="_blank" rel="noreferrer">
-                    게임 영상 {index + 1}
-                  </a>
+                {game.movie.map((movie, index) => (
+                  <GameMovieCard
+                    key={`${movie.movieId ?? index}-${movie.hlsH264}`}
+                    movie={movie}
+                    index={index}
+                    appId={game.appId}
+                  />
                 ))}
               </div>
             ) : (

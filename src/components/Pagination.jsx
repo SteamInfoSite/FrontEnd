@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const PAGE_GROUP_SIZE = 5;
 
 function Pagination({
@@ -98,8 +100,79 @@ function Pagination({
           </button>
         </>
       )}
-    </div>
+              {groupNavigation && totalPages > 1 && (
+                <PageJumpForm
+                  key={`${currentPage}-${totalPages}`}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                />
+              )}
+            </div>
+          );
+        }
+
+        export default Pagination;
+
+function PageJumpForm({ currentPage, totalPages, onPageChange }) {
+  const [pageInput, setPageInput] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const value = pageInput.trim();
+    const targetPage = Number(value);
+
+    if (
+      !/^[0-9]+$/.test(value) ||
+      !Number.isSafeInteger(targetPage) ||
+      targetPage < 1 ||
+      targetPage > totalPages
+    ) {
+      setError(
+        `1부터 ${totalPages.toLocaleString("ko-KR")}까지의 페이지 번호를 입력해 주세요.`
+      );
+      return;
+    }
+
+    setError("");
+    setPageInput("");
+
+    if (targetPage !== currentPage) {
+      onPageChange(targetPage);
+    }
+  };
+
+  return (
+    <form className="page-jump-form" onSubmit={handleSubmit}>
+      <label className="page-jump-label">
+        <input
+          type="text"
+          aria-label="이동할 페이지 번호"
+          inputMode="numeric"
+          autoComplete="off"
+          value={pageInput}
+          placeholder="페이지 번호"
+          aria-invalid={Boolean(error)}
+          onChange={(event) => {
+            setPageInput(event.target.value);
+            setError("");
+          }}
+        />
+      </label>
+
+      <span className="page-jump-total">
+        / {totalPages.toLocaleString("ko-KR")}
+      </span>
+
+      <button type="submit">이동</button>
+
+      {error && (
+        <p className="page-jump-error" role="alert">
+          {error}
+        </p>
+      )}
+    </form>
   );
 }
-
-export default Pagination;

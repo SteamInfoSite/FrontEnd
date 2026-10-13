@@ -174,33 +174,10 @@
   background: #7c3aed;
 }
 
-/* =========================
-   Wishlist Button & Storage Status
-========================= */
+/* =====================
+    Storage Status
+===================== */
 
-.game-wishlist-button {
-  width: 100%;
-  min-height: 46px;
-  margin-top: 10px;
-  padding: 12px 16px;
-  border: 1px solid #8b45f5;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #7c3aed;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.4;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.game-wishlist-button:hover {
-  background: #f5efff;
-  border-color: #6d28d9;
-}
-
-.game-wishlist-button:focus-visible,
 .steam-store-link:focus-visible {
   outline: 3px solid #7c3aed;
   outline-offset: 3px;
@@ -279,12 +256,92 @@
 }
 
 .game-video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
 }
 
-.game-video-list a {
+.game-movie-card {
+  min-width: 0;
+}
+
+.game-movie-thumbnail {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: #171717;
+  cursor: pointer;
+}
+
+.game-movie-thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-movie-placeholder {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #dddddd;
+}
+
+.game-movie-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-size: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.game-movie-thumbnail:hover .game-movie-play {
+  background: #7c3aed;
+}
+
+.game-movie-thumbnail:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 4px;
+}
+
+.game-movie-player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: #000000;
+}
+
+.game-movie-card h3 {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.game-movie-error {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.game-movie-error a {
   color: #7c3aed;
 }
 
