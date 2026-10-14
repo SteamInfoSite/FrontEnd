@@ -1,68 +1,58 @@
-import { mockBoardDetails } from "../mocks/boardDetailMockData";
-import { getCommentCount } from "../mocks/boardCommentMock";
+const CATEGORY_LABELS = {
+  NOTICE: "공지",
+  CHAT: "잡담",
+  NEWS: "소식",
+};
+
+function formatDate(value) {
+  return value ? value.replace("T", " ").slice(0, 16) : "";
+}
 
 function BoardTable({ posts = [], onPostClick }) {
   return (
     <div className="board-table">
       <div className="board-table-header">
-        <div className="board-title-column">
-          게시글 제목
-        </div>
-
-        <div className="board-nickname-column">
-          닉네임
-        </div>
-
-        <div className="board-views-column">
-          조회수
-        </div>
-
-        <div className="board-date-column">
-          날짜
-        </div>
-
-        <div className="board-likes-column">
-          추천
-        </div>
+        <div className="board-title-column">게시글 제목</div>
+        <div className="board-nickname-column">닉네임</div>
+        <div className="board-views-column">조회수</div>
+        <div className="board-date-column">날짜</div>
+        <div className="board-likes-column">추천</div>
       </div>
 
       <div className="board-table-body">
+        {posts.length === 0 && <p className="board-empty">아직 게시글이 없습니다.</p>}
+
         {posts.map((post) => (
           <button
             key={post.id}
+            type="button"
             id={`board_post_${post.id}`}
             className="board-row"
             onClick={() => onPostClick(post)}
           >
             <div className="board-title-column board-post-title">
-              {post.pinned && (
-                <span className="board-pin">
-                  📌
-                </span>
-              )}
-
               <span className="board-post-title-text">
-                [{post.category}] {post.title}
-                {" "}
-                [{getCommentCount(post.id, mockBoardDetails.find((detail) => detail.id === post.id)?.comments || [])}]
-            </span>
+                [{CATEGORY_LABELS[post.category] ?? post.category}]{" "}
+                {post.title} [{post.commentCount}]
+              </span>
             </div>
 
             <div className="board-nickname-column">
-              {post.nickname}
+              {post.authorName}
             </div>
 
             <div className="board-views-column">
-              {post.views}
+              {post.viewCount}
             </div>
 
             <div className="board-date-column">
-              {post.date}
+              {formatDate(post.createdAt)}
             </div>
 
             <div className="board-likes-column">
-              {post.likes}
+              {Number.isInteger(post.likeCount) ? post.likeCount : "-"}
             </div>
+
           </button>
         ))}
       </div>

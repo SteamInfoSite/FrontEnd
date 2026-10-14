@@ -1,76 +1,207 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import CommentList from "../components/CommentList";
 import CommentForm from "../components/CommentForm";
+import Pagination from "../components/Pagination";
 
-import { mockBoardPosts } from "../mocks/boardMockData";
-import { mockBoardDetails } from "../mocks/boardDetailMockData";
-
-import { getLikeDates, addDailyLike } from "../mocks/boardLikeMock";
-import { getCreatedPosts } from "../mocks/boardPostMock";
+import {
+  getPost,
+  getComments,
+  createComment,
+  deletePost,
+  likePost,
+} from "../services/boardService";
+import { useAuth } from "../contexts/AuthContext";
 import { cleanBoardContent } from "../mocks/boardContent";
-import { addComment, getComments } from "../mocks/boardCommentMock";
-import { getViewCount, recordView } from "../mocks/boardViewMock";
 
 import "../styles/BoardDetail.css";
 
+const COMMENT_PAGE_SIZE = 20;
+
+const CATEGORY_LABELS = {
+  NOTICE: "공지",
+  CHAT: "잡담",
+  NEWS: "소식",
+};
+
+function formatDate(value) {
+  return value ? value.replace("T", " ").slice(0, 16) : "";
+}
+
 function BoardDetail() {
   const { id } = useParams();
-  const createdPost = getCreatedPosts().find((post) => post.id === Number(id));
+  const navigate = useNavigate();
+  const { loggedIn, status: authStatus } = useAuth();
+  const [post, setPost] = useState(null);
+  const [postLoading, setPostLoading] = useState(true);
+  const [postError, setPostError] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [liking, setLiking] = useState(false);
+  const [likeMessage, setLikeMessage] = useState("");
 
-  const post = createdPost || mockBoardPosts.find(
-    (post) => post.id === Number(id)
-  );
+  const [commentPage, setCommentPage] = useState(1);
+  const [commentData, setCommentData] = useState({
+    items: [],
+    totalElements: 0,
+    totalPages: 0,
+  });
+  const [commentLoading, setCommentLoading] = useState(true);
+  const [commentError, setCommentError] = useState(null);
 
-  const detail = createdPost || mockBoardDetails.find(
-    (detail) => detail.id === Number(id)
-  );
+  const postErrorMessage = postError?.status === 404
+    ? "게시글을 찾을 수 없습니다."
+    : postError?.status === 503
+      ? "게시글을 일시적으로 불러올 수 없습니다. 잠시 후 다시 시도해 주세요."
+      : postError?.message;
 
-  const [comments, setComments] = useState(() =>
-    getComments(id, detail?.comments || [])
-  );
-  const [viewCount, setViewCount] = useState(() =>
-    getViewCount(id, post?.views || 0)
-  );
-  const viewedIdRef = useRef(null);
+  const commentErrorMessage = commentError?.status === 404
+    ? "댓글을 불러올 게시글을 찾을 수 없습니다."
+    : commentError?.status === 503
+      ? "댓글을 일시적으로 불러올 수 없습니다. 잠시 후 다시 시도해 주세요."
+      : commentError?.message;
+
+  const likesAvailable = Number.isInteger(post?.likeCount)
+    && typeof post?.likedByMe === "boolean";
 
   useEffect(() => {
-    // 한 번의 상세 페이지 방문에서는 조회수가 한 번만 증가합니다.
-    if (viewedIdRef.current === id || !post) return;
-    viewedIdRef.current = id;
-    setViewCount(recordView(id, post.views || 0));
-  }, [id, post]);
+    let active = true;
+    setPost(null);
+    setPostLoading(true);
+    setPostError(null);
+    setDeleteError("");
+    setLikeMessage("");
+    setCommentPage(1);
+    setCommentData({ items: [], totalElements: 0, totalPages: 0 });
+    setCommentError(null);
+    setCommentLoading(true);
 
-  const [likeMessage, setLikeMessage] = useState({ postId: null, text: "" });
-  const likeCount = (post?.likes || 0) + getLikeDates(id).length;
-
-  const handleLikeClick = () => {
-    // 백엔드 연결 후 추천 API에서 사용자별 하루 1회 제한을 처리합니다.
-    try {
-      const added = addDailyLike(id);
-      setLikeMessage({
-        postId: id,
-        text: added ? "추천했습니다." : "이 게시글은 오늘 이미 추천했습니다.",
-      });
-    } catch {
-      // API 연동 시 서버 오류 메시지 처리로 변경합니다.
-      setLikeMessage({
-        postId: id,
-        text: "추천에 실패했습니다. 다시 시도해 주세요.",
-      });
+    if (!Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+      setPostError(new Error("게시글 번호가 올바르지 않습니다."));
+      setPostLoading(false);
+      return () => {
+        active = false;
+      };
     }
-  };
 
-  const handleCommentSubmit = ({ nickname, content }) => {
-    // 백엔드 연결 후 댓글 등록 API 호출로 교체합니다.
-    console.log("댓글 등록:", content);
-    setComments(addComment(id, { nickname, content }));
-  };
+    getPost(id)
+      .then((data) => {
+        if (active) setPost(data);
+      })
+      .catch((requestError) => {
+        if (active) setPostError(requestError);
+      })
+      .finally(() => {
+        if (active) setPostLoading(false);
+      });
 
-  if (!post || !detail) {
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!post || String(post.id) !== id) return;
+
+    let active = true;
+    setCommentLoading(true);
+    setCommentError(null);
+
+    getComments(id, commentPage, COMMENT_PAGE_SIZE)
+      .then((data) => {
+        if (!active) return;
+        setCommentData(data);
+        setCommentError(null);
+      })
+      .catch((requestError) => {
+        if (active) setCommentError(requestError);
+      })
+      .finally(() => {
+        if (active) setCommentLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id, post, commentPage]);
+
+  async function handleCommentSubmit(content) {
+    await createComment(id, content);
+
+    // 댓글은 오래된 순서부터 나오므로 새 댓글이 있는 마지막 페이지로 이동합니다.
+    const firstPage = await getComments(id, 1, COMMENT_PAGE_SIZE);
+    const lastPage = Math.max(1, firstPage.totalPages);
+    const latestPage = lastPage === 1
+      ? firstPage
+      : await getComments(id, lastPage, COMMENT_PAGE_SIZE);
+
+    setCommentData(latestPage);
+    setCommentPage(lastPage);
+    setCommentError(null);
+  }
+
+  async function handleDelete() {
+    if (deleting || authStatus !== "ready" || !loggedIn) return;
+    if (!window.confirm("게시글을 삭제할까요? 삭제한 글은 복구할 수 없습니다.")) return;
+
+    setDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deletePost(id);
+      navigate("/board", { replace: true });
+    } catch (error) {
+      setDeleteError(
+        error.status === 403
+          ? "작성자만 게시글을 삭제할 수 있습니다."
+          : error.status === 401
+            ? "로그인이 필요합니다. 로그인 상태를 다시 확인해 주세요."
+            : error.status === 404
+              ? "이미 삭제되었거나 존재하지 않는 게시글입니다."
+              : error.message
+      );
+      setDeleting(false);
+    }
+  }
+
+  async function handleLike() {
+    if (!post || !likesAvailable || liking || post.likedByMe) return;
+    if (authStatus !== "ready") {
+      setLikeMessage("로그인 상태를 확인한 뒤 다시 시도해 주세요.");
+      return;
+    }
+    if (!loggedIn) {
+      setLikeMessage("로그인 후 추천할 수 있습니다.");
+      return;
+    }
+
+    setLiking(true);
+    setLikeMessage("");
+
+    try {
+      const result = await likePost(id);
+      setPost((current) => current && String(current.id) === id
+        ? { ...current, likeCount: result.likeCount, likedByMe: result.likedByMe }
+        : current);
+      setLikeMessage("추천했습니다.");
+    } catch (error) {
+      if (error.status === 409) {
+        setPost((current) => current && String(current.id) === id
+          ? { ...current, likedByMe: true }
+          : current);
+        setLikeMessage("이미 추천한 게시글입니다.");
+      } else {
+        setLikeMessage(error.message);
+      }
+    } finally {
+      setLiking(false);
+    }
+  }
+
+  if (postLoading || postError || !post) {
     return (
       <div className="board-detail-page">
         <Sidebar />
@@ -80,7 +211,9 @@ function BoardDetail() {
 
           <main className="board-detail-content">
             <div className="post-not-found">
-              게시글을 찾을 수 없습니다.
+              {postLoading
+                ? "게시글을 불러오는 중입니다."
+                : postErrorMessage || "게시글을 찾을 수 없습니다."}
             </div>
           </main>
         </div>
@@ -99,69 +232,95 @@ function BoardDetail() {
           <section className="post-detail">
             <div className="post-detail-header">
               <h1>
-                [{post.category}] {post.title}
+                [{CATEGORY_LABELS[post.category] ?? post.category}]{" "}
+                {post.title}
               </h1>
 
               <div className="post-info">
-                <span>
-                  작성자: {post.nickname}
-                </span>
-
-                <span>
-                  {detail.fullDate}
-                </span>
+                <span>작성자: {post.authorName}</span>
+                <span>{formatDate(post.createdAt)}</span>
+                {authStatus === "ready" && loggedIn && post.isMine && (
+                  <button
+                    type="button"
+                    className="post-delete-button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                  >
+                    {deleting ? "삭제 중..." : "삭제"}
+                  </button>
+                )}
               </div>
+              {deleteError && (
+                <p className="post-delete-error" role="alert">{deleteError}</p>
+              )}
             </div>
 
             <div className="post-detail-body">
-              {detail.contentHtml ? (
-                <div className="post-rich-content" dangerouslySetInnerHTML={{ __html: cleanBoardContent(detail.contentHtml) }} />
-              ) : <p>
-                {detail.content}
-              </p>}
+              <div
+                className="post-rich-content"
+                dangerouslySetInnerHTML={{
+                  __html: cleanBoardContent(post.contentHtml),
+                }}
+              />
 
               <div className="like-area">
                 <button
                   type="button"
                   className="like-button"
-                  onClick={handleLikeClick}
-                  aria-label="게시글 추천, 하루 한 번 가능"
+                  onClick={handleLike}
+                  disabled={!likesAvailable || liking || post.likedByMe}
+                  aria-pressed={likesAvailable && post.likedByMe}
+                  aria-label={!likesAvailable
+                    ? "추천 기능 준비 중"
+                    : post.likedByMe ? "이미 추천한 게시글" : "게시글 추천"}
                 >
                   <span aria-hidden="true">⭐</span>
                 </button>
-                <span className="like-label">추천</span>
+                <span className="like-label">
+                  {!likesAvailable
+                    ? "추천 준비 중"
+                    : post.likedByMe ? "추천 완료" : "추천하기"}
+                </span>
                 <span className="like-message" role="status">
-                  {likeMessage.postId === id ? likeMessage.text : ""}
+                  {likesAvailable
+                    ? likeMessage
+                    : "서버에 추천 기능이 반영되면 사용할 수 있습니다."}
                 </span>
               </div>
+
             </div>
 
             <div className="post-detail-bottom">
-              <span>
-                댓글 {comments.length}개
-              </span>
-
-              <span>
-                추천 {likeCount}
-              </span>
-              <span>
-                조회 {viewCount}
-              </span>
+              <span>댓글 {commentLoading ? "확인 중" : commentData.totalElements + "개"}</span>
+              <span>추천 {likesAvailable ? post.likeCount : "-"}</span>
+              <span>조회 {post.viewCount}</span>
             </div>
           </section>
 
           <section className="comment-section">
             <div className="comment-section-title">
-              댓글 {comments.length}개
+              댓글 {commentLoading ? "확인 중" : commentData.totalElements + "개"}
             </div>
 
-            <CommentList
-              comments={comments}
-            />
+            {commentLoading && (
+              <p className="comment-state" role="status">댓글을 불러오는 중입니다.</p>
+            )}
+            {commentError && (
+              <p className="comment-state" role="alert">{commentErrorMessage}</p>
+            )}
 
-            <CommentForm
-              onCommentSubmit={handleCommentSubmit}
-            />
+            {!commentLoading && !commentError && (
+              <>
+                <CommentList comments={commentData.items} />
+                <Pagination
+                  currentPage={commentPage}
+                  totalPages={commentData.totalPages}
+                  onPageChange={setCommentPage}
+                />
+              </>
+            )}
+
+            <CommentForm onCommentSubmit={handleCommentSubmit} />
           </section>
         </main>
       </div>
