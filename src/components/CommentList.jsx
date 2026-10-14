@@ -1,6 +1,13 @@
+function formatDate(value) {
+  return value ? value.replace("T", " ").slice(0, 16) : "";
+}
+
 function CommentList({ comments = [] }) {
   return (
     <div className="comment-list">
+      {comments.length === 0 && (
+        <p className="comment-empty">아직 댓글이 없습니다.</p>
+      )}
       {comments.map((comment) => (
         <div
           id={`comment_item_${comment.id}`}
@@ -8,7 +15,7 @@ function CommentList({ comments = [] }) {
           className="comment-item"
         >
           <div className="comment-nickname">
-            {comment.nickname}
+            {comment.authorName}
           </div>
 
           <div className="comment-content">
@@ -16,7 +23,7 @@ function CommentList({ comments = [] }) {
           </div>
 
           <div className="comment-date">
-            {comment.date}
+            {formatDate(comment.createdAt)}
           </div>
         </div>
       ))}

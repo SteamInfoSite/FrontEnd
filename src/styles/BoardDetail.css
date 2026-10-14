@@ -73,6 +73,33 @@
   font-size: 12px;
 }
 
+.post-delete-button {
+  margin-left: auto;
+  padding: 5px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: white;
+  color: #555555;
+  font: inherit;
+  cursor: pointer;
+}
+
+.post-delete-button:hover:not(:disabled) {
+  border-color: #8b45f5;
+  color: #7c3aed;
+}
+
+.post-delete-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.post-delete-error {
+  margin: 10px 0 0;
+  color: #b42318;
+  font-size: 13px;
+}
+
 /* =========================
    Post Body
 ========================= */
@@ -136,8 +163,13 @@
   transition: transform 0.2s ease;
 }
 
-.like-button:hover {
+.like-button:hover:not(:disabled) {
   transform: scale(1.1);
+}
+
+.like-button:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 
 /* =========================
@@ -189,6 +221,14 @@
 
 .comment-list {
   width: 100%;
+}
+
+.comment-state,
+.comment-empty {
+  padding: 20px 15px;
+  margin: 0;
+  color: #555555;
+  text-align: center;
 }
 
 .comment-item {
