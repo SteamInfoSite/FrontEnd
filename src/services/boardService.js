@@ -1,10 +1,19 @@
 async function request(path, { json, ...options } = {}) {
+  const method = (options.method || "GET").toUpperCase();
+  let headers = json === undefined
+    ? { ...options.headers }
+    : { "Content-Type": "application/json", ...options.headers };
+
+  if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+    const csrfResponse = await request("/csrf");
+    const { token, headerName } = await csrfResponse.json();
+    headers = { ...headers, [headerName]: token };
+  }
+
   const response = await fetch(`/api/community${path}`, {
     ...options,
     credentials: "include",
-    headers: json === undefined
-      ? options.headers
-      : { "Content-Type": "application/json", ...options.headers },
+    headers,
     body: json === undefined ? undefined : JSON.stringify(json),
   });
 
