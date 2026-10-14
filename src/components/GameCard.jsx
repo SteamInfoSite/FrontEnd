@@ -7,7 +7,7 @@ function GameCard({ game, featured }) {
     <button
       type="button"
       className={`game-card ${featured ? "featured" : ""}`}
-      onClick={() => navigate(`/games/${game.id}`)}
+      onClick={() => navigate(`/games/detail/${game.appId}`)}
       aria-label={`${game.title} 상세 페이지로 이동`}
     >
       <img src={game.image} alt={game.title || "Game"} />
