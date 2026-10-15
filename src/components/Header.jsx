@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 //로그인 안내 페이지로 보냄
 function Header() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const {
@@ -38,26 +40,26 @@ function Header() {
   return (
     <header id="site_header" className="header">
       <div className="search-area">
-        <span>Search:</span>
+        <span>{t("Search")}:</span>
 
         <input
           id="game_search_input"
           type="text"
-          placeholder="게임 검색"
+          placeholder={t("게임 검색")}
         />
       </div>
 
       <div className="auth-buttons">
         {status === "loading" ? (
-          <span role="status">로그인 확인 중…</span>
+          <span role="status">{t("로그인 확인 중…")}</span>
         ) : status === "error" ? (
           <>
             <p className="auth-error" role="alert">
-              {error}
+              {t(error)}
             </p>
 
             <button type="button" onClick={refreshAuth}>
-              다시 확인
+              {t("다시 확인")}
             </button>
           </>
         ) : loggedIn ? (
@@ -68,12 +70,12 @@ function Header() {
               onClick={handleLogout}
               disabled={isLoggingOut}
             >
-              {isLoggingOut ? "로그아웃 중…" : "로그아웃"}
+              {isLoggingOut ? t("로그아웃 중…") : t("로그아웃")}
             </button>
 
             {logoutError && (
               <p className="auth-error" role="alert">
-                {logoutError}
+                {t(logoutError)}
               </p>
             )}
           </>
@@ -83,7 +85,7 @@ function Header() {
             type="button"
             onClick={() => navigate("/login")}
           >
-            Steam Login
+            {t("Steam Login")}
           </button>
         )}
       </div>

@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { mockGameDetails } from "../mocks/gameDetailMockData";
 import GameMovieCard from "../components/GameMovieCard";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/GameDetail.css";
 
@@ -22,6 +23,7 @@ function GameDetail({ isExample = false }) {
 }
 
 function GameDetailContent({ appId, isExample }) {
+  const { t, formatNumber } = useLanguage();
   const { hash } = useLocation();
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -89,11 +91,11 @@ function GameDetailContent({ appId, isExample }) {
               }
             >
               <h1>
-                {result.status === "loading"
+                {t(result.status === "loading"
                   ? "게임 정보를 불러오는 중입니다."
                   : result.status === "missing"
                     ? "게임 정보를 찾을 수 없습니다."
-                    : "게임 정보를 불러오지 못했습니다."}
+                    : "게임 정보를 불러오지 못했습니다.")}
               </h1>
 
               {result.status === "error" && (
@@ -103,13 +105,13 @@ function GameDetailContent({ appId, isExample }) {
                     setRetry((value) => value + 1)
                   }
                 >
-                  다시 시도
+                  {t("다시 시도")}
                 </button>
               )}
 
               {result.status !== "loading" && (
                 <p>
-                  <Link to="/">홈으로 돌아가기</Link>
+                  <Link to="/">{t("홈으로 돌아가기")}</Link>
                 </p>
               )}
             </div>
@@ -123,16 +125,21 @@ function GameDetailContent({ appId, isExample }) {
   if (game.platforms.windows) platformNames.push("Windows");
   if (game.platforms.mac) platformNames.push("macOS");
   if (game.platforms.linux) platformNames.push("Linux");
+  const shortDescription = isExample ? t(game.shortDescription) : game.shortDescription;
+  const description = isExample
+    ? t(game.description || game.shortDescription)
+    : game.description || game.shortDescription;
+  const genres = isExample ? game.genres.map((genre) => t(genre)) : game.genres;
 
   const priceText = game.isFree
-    ? "무료 플레이"
-    : game.priceText || "스팀에서 가격 확인";
+    ? t("무료 플레이")
+    : game.priceText ? t(game.priceText) : t("스팀에서 가격 확인");
   const developerText = game.developers.length
     ? game.developers.join(", ")
-    : "개발사 정보 없음";
+    : t("개발사 정보 없음");
   const publisherText = game.publishers.length
     ? game.publishers.join(", ")
-    : "배급사 정보 없음";
+    : t("배급사 정보 없음");
   const images = [
     ...new Set(
       [game.image, ...(game.screenshots || [])].filter(Boolean)
@@ -156,7 +163,7 @@ function GameDetailContent({ appId, isExample }) {
           <div className="game-detail-heading">
             <div>
               <h1>{game.title}</h1>
-              <p>{game.shortDescription}</p>
+              <p>{shortDescription}</p>
             </div>
             <span>{platformNames.join(" · ")} · {priceText}</span>
           </div>
@@ -167,13 +174,13 @@ function GameDetailContent({ appId, isExample }) {
                 <img
                   className="game-main-image"
                   src={images[selectedImage]}
-                  alt={`${game.title} 대표 이미지`}
+                  alt={t("{{title}} 대표 이미지", { title: game.title })}
                   onError={(event) => {
                     event.currentTarget.hidden = true;
                   }}
                 />
               ) : (
-                <p>등록된 게임 이미지가 없습니다.</p>
+                <p>{t("등록된 게임 이미지가 없습니다.")}</p>
               )}
 
               <div className="game-media-list">
@@ -183,7 +190,7 @@ function GameDetailContent({ appId, isExample }) {
                     type="button"
                     className={`game-media-item ${selectedImage === index ? "active" : ""}`}
                     onClick={() => setSelectedImage(index)}
-                    aria-label={`${game.title} 이미지 ${index + 1} 보기`}
+                    aria-label={t("{{title}} 이미지 {{number}} 보기", { title: game.title, number: index + 1 })}
                     aria-pressed={selectedImage === index}
                   >
                     <img src={image} alt="" />
@@ -195,15 +202,15 @@ function GameDetailContent({ appId, isExample }) {
             <div className="game-info-card">
               <h2>{priceText}</h2>
               <p className="game-genre-list">
-                {game.genres.length ? game.genres.join(" · ") : "장르 정보 없음"}
+                {genres.length ? genres.join(" · ") : t("장르 정보 없음")}
               </p>
-              <p className="game-short-description">{game.shortDescription}</p>
+              <p className="game-short-description">{shortDescription}</p>
 
               <dl className="game-basic-info">
-                <div><dt>개발사</dt><dd>{developerText}</dd></div>
-                <div><dt>배급사</dt><dd>{publisherText}</dd></div>
-                <div><dt>출시일</dt><dd>{game.comingSoon ? "출시 예정" : game.relDate}</dd></div>
-                <div><dt>이용 연령</dt><dd>{game.requiredAge == null ? "연령 정보 없음" : game.requiredAge ? `${game.requiredAge}세 이상` : "전체 이용가"}</dd></div>
+                <div><dt>{t("개발사")}</dt><dd>{developerText}</dd></div>
+                <div><dt>{t("배급사")}</dt><dd>{publisherText}</dd></div>
+                <div><dt>{t("출시일")}</dt><dd>{game.comingSoon ? t("출시 예정") : t(game.relDate)}</dd></div>
+                <div><dt>{t("이용 연령")}</dt><dd>{game.requiredAge == null ? t("연령 정보 없음") : game.requiredAge ? t("{{age}}세 이상", { age: game.requiredAge }) : t("전체 이용가")}</dd></div>
               </dl>
 
               <a
@@ -215,31 +222,31 @@ function GameDetailContent({ appId, isExample }) {
                 target="_blank"
                 rel="noreferrer"
               >
-                {game.appId ? "Steam 스토어에서 보기" : "Steam 스토어에서 검색"}
+                {t(game.appId ? "Steam 스토어에서 보기" : "Steam 스토어에서 검색")}
               </a>
             </div>
           </section>
 
-          <nav className="game-detail-tabs" aria-label="게임 상세 메뉴">
+          <nav className="game-detail-tabs" aria-label={t("게임 상세 메뉴")}>
             {detailMenus.map((menu) => (
               <a
                 key={menu.id}
                 href={`#${menu.id}`}
                 aria-current={(hash || "#game_introduction") === `#${menu.id}` ? "location" : undefined}
               >
-                {menu.label}
+                {t(menu.label)}
               </a>
             ))}
           </nav>
 
           <div className="game-detail-sections">
             <section id="game_introduction" className="game-detail-section">
-              <h2>게임 소개</h2>
-              <p>{game.description || game.shortDescription}</p>
+              <h2>{t("게임 소개")}</h2>
+              <p>{description}</p>
 
               {game.categories.length > 0 && (
                 <div className="game-category-list">
-                  {game.categories.map((category) => (
+                  {[...new Set(game.categories)].map((category) => (
                     <span key={category}>{category}</span>
                   ))}
                 </div>
@@ -247,23 +254,23 @@ function GameDetailContent({ appId, isExample }) {
             </section>
 
             <section id="game_information" className="game-detail-section">
-              <h2>게임 정보</h2>
+              <h2>{t("게임 정보")}</h2>
               <dl className="game-detail-info-list">
-                <div><dt>플랫폼</dt><dd>{platformNames.join(", ") || "플랫폼 정보 없음"}</dd></div>
-                <div><dt>지원 언어</dt><dd>{game.supportedLanguages}</dd></div>
+                <div><dt>{t("플랫폼")}</dt><dd>{platformNames.join(", ") || t("플랫폼 정보 없음")}</dd></div>
+                <div><dt>{t("지원 언어")}</dt><dd>{t(game.supportedLanguages)}</dd></div>
               </dl>
             </section>
           </div>
 
           <section id="game_reviews" className="game-detail-section game-extra-section">
-            <h2>유저 평가</h2>
+            <h2>{t("유저 평가")}</h2>
             <p>{game.recommendationsTotal == null
-              ? "아직 제공된 평가 정보가 없습니다. Steam 스토어에서 최신 평가를 확인해 주세요."
-              : `Steam 추천 ${game.recommendationsTotal.toLocaleString()}개`}</p>
+              ? t("아직 제공된 평가 정보가 없습니다. Steam 스토어에서 최신 평가를 확인해 주세요.")
+              : t("Steam 추천 {{count}}개", { count: formatNumber(game.recommendationsTotal) })}</p>
           </section>
 
           <section id="game_video_section" className="game-detail-section game-video-section">
-            <h2>영상</h2>
+            <h2>{t("영상")}</h2>
             {game.movie.length > 0 ? (
               <div className="game-video-list">
                 {game.movie.map((movie, index) => (
@@ -276,15 +283,15 @@ function GameDetailContent({ appId, isExample }) {
                 ))}
               </div>
             ) : (
-              <p>{game.title}의 제공된 영상 정보가 없습니다.</p>
+              <p>{t("{{title}}의 제공된 영상 정보가 없습니다.", { title: game.title })}</p>
             )}
           </section>
 
           <p className="game-detail-source">
-            {isExample
+            {t(isExample
               ? "현재 게임 정보는 예시 데이터입니다."
-              : "Steam에서 수집한 게임 정보입니다."}
-            {" · 이미지 출처: Steam"}
+              : "Steam에서 수집한 게임 정보입니다.")}
+            {t(" · 이미지 출처: Steam")}
           </p>
         </main>
       </div>

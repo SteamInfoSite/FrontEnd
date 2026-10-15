@@ -15,6 +15,7 @@ import {
   likePost,
 } from "../services/boardService";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { cleanBoardContent } from "../mocks/boardContent";
 
 import "../styles/BoardDetail.css";
@@ -32,6 +33,7 @@ function formatDate(value) {
 }
 
 function BoardDetail() {
+  const { t, formatNumber } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const { loggedIn, status: authStatus } = useAuth();
@@ -145,7 +147,7 @@ function BoardDetail() {
 
   async function handleDelete() {
     if (deleting || authStatus !== "ready" || !loggedIn) return;
-    if (!window.confirm("게시글을 삭제할까요? 삭제한 글은 복구할 수 없습니다.")) return;
+    if (!window.confirm(t("게시글을 삭제할까요? 삭제한 글은 복구할 수 없습니다."))) return;
 
     setDeleting(true);
     setDeleteError("");
@@ -211,9 +213,9 @@ function BoardDetail() {
 
           <main className="board-detail-content">
             <div className="post-not-found">
-              {postLoading
+              {t(postLoading
                 ? "게시글을 불러오는 중입니다."
-                : postErrorMessage || "게시글을 찾을 수 없습니다."}
+                : postErrorMessage || "게시글을 찾을 수 없습니다.")}
             </div>
           </main>
         </div>
@@ -232,12 +234,12 @@ function BoardDetail() {
           <section className="post-detail">
             <div className="post-detail-header">
               <h1>
-                [{CATEGORY_LABELS[post.category] ?? post.category}]{" "}
+                [{t(CATEGORY_LABELS[post.category] ?? post.category)}]{" "}
                 {post.title}
               </h1>
 
               <div className="post-info">
-                <span>작성자: {post.authorName}</span>
+                <span>{t("작성자: {{name}}", { name: post.authorName })}</span>
                 <span>{formatDate(post.createdAt)}</span>
                 {authStatus === "ready" && loggedIn && post.isMine && (
                   <button
@@ -246,12 +248,12 @@ function BoardDetail() {
                     onClick={handleDelete}
                     disabled={deleting}
                   >
-                    {deleting ? "삭제 중..." : "삭제"}
+                    {t(deleting ? "삭제 중..." : "삭제")}
                   </button>
                 )}
               </div>
               {deleteError && (
-                <p className="post-delete-error" role="alert">{deleteError}</p>
+                <p className="post-delete-error" role="alert">{t(deleteError)}</p>
               )}
             </div>
 
@@ -270,43 +272,43 @@ function BoardDetail() {
                   onClick={handleLike}
                   disabled={!likesAvailable || liking || post.likedByMe}
                   aria-pressed={likesAvailable && post.likedByMe}
-                  aria-label={!likesAvailable
+                  aria-label={t(!likesAvailable
                     ? "추천 기능 준비 중"
-                    : post.likedByMe ? "이미 추천한 게시글" : "게시글 추천"}
+                    : post.likedByMe ? "이미 추천한 게시글" : "게시글 추천")}
                 >
                   <span aria-hidden="true">⭐</span>
                 </button>
                 <span className="like-label">
-                  {!likesAvailable
+                  {t(!likesAvailable
                     ? "추천 준비 중"
-                    : post.likedByMe ? "추천 완료" : "추천하기"}
+                    : post.likedByMe ? "추천 완료" : "추천하기")}
                 </span>
                 <span className="like-message" role="status">
-                  {likesAvailable
+                  {t(likesAvailable
                     ? likeMessage
-                    : "서버에 추천 기능이 반영되면 사용할 수 있습니다."}
+                    : "서버에 추천 기능이 반영되면 사용할 수 있습니다.")}
                 </span>
               </div>
 
             </div>
 
             <div className="post-detail-bottom">
-              <span>댓글 {commentLoading ? "확인 중" : commentData.totalElements + "개"}</span>
-              <span>추천 {likesAvailable ? post.likeCount : "-"}</span>
-              <span>조회 {post.viewCount}</span>
+              <span>{commentLoading ? t("댓글 확인 중") : t("댓글 {{count}}개", { count: formatNumber(commentData.totalElements) })}</span>
+              <span>{t("추천 {{count}}", { count: likesAvailable ? formatNumber(post.likeCount) : "-" })}</span>
+              <span>{t("조회 {{count}}", { count: formatNumber(post.viewCount) })}</span>
             </div>
           </section>
 
           <section className="comment-section">
             <div className="comment-section-title">
-              댓글 {commentLoading ? "확인 중" : commentData.totalElements + "개"}
+              {commentLoading ? t("댓글 확인 중") : t("댓글 {{count}}개", { count: formatNumber(commentData.totalElements) })}
             </div>
 
             {commentLoading && (
-              <p className="comment-state" role="status">댓글을 불러오는 중입니다.</p>
+              <p className="comment-state" role="status">{t("댓글을 불러오는 중입니다.")}</p>
             )}
             {commentError && (
-              <p className="comment-state" role="alert">{commentErrorMessage}</p>
+              <p className="comment-state" role="alert">{t(commentErrorMessage)}</p>
             )}
 
             {!commentLoading && !commentError && (

@@ -1,3 +1,5 @@
+import { useLanguage } from "../contexts/LanguageContext";
+
 const CATEGORY_LABELS = {
   NOTICE: "공지",
   CHAT: "잡담",
@@ -9,18 +11,19 @@ function formatDate(value) {
 }
 
 function BoardTable({ posts = [], onPostClick }) {
+  const { t, formatNumber } = useLanguage();
   return (
     <div className="board-table">
       <div className="board-table-header">
-        <div className="board-title-column">게시글 제목</div>
-        <div className="board-nickname-column">닉네임</div>
-        <div className="board-views-column">조회수</div>
-        <div className="board-date-column">날짜</div>
-        <div className="board-likes-column">추천</div>
+        <div className="board-title-column">{t("게시글 제목")}</div>
+        <div className="board-nickname-column">{t("닉네임")}</div>
+        <div className="board-views-column">{t("조회수")}</div>
+        <div className="board-date-column">{t("날짜")}</div>
+        <div className="board-likes-column">{t("추천")}</div>
       </div>
 
       <div className="board-table-body">
-        {posts.length === 0 && <p className="board-empty">아직 게시글이 없습니다.</p>}
+        {posts.length === 0 && <p className="board-empty">{t("아직 게시글이 없습니다.")}</p>}
 
         {posts.map((post) => (
           <button
@@ -32,8 +35,8 @@ function BoardTable({ posts = [], onPostClick }) {
           >
             <div className="board-title-column board-post-title">
               <span className="board-post-title-text">
-                [{CATEGORY_LABELS[post.category] ?? post.category}]{" "}
-                {post.title} [{post.commentCount}]
+                [{t(CATEGORY_LABELS[post.category] ?? post.category)}]{" "}
+                {post.title} [{formatNumber(post.commentCount)}]
               </span>
             </div>
 
@@ -42,7 +45,7 @@ function BoardTable({ posts = [], onPostClick }) {
             </div>
 
             <div className="board-views-column">
-              {post.viewCount}
+              {formatNumber(post.viewCount)}
             </div>
 
             <div className="board-date-column">
@@ -50,7 +53,7 @@ function BoardTable({ posts = [], onPostClick }) {
             </div>
 
             <div className="board-likes-column">
-              {Number.isInteger(post.likeCount) ? post.likeCount : "-"}
+              {Number.isInteger(post.likeCount) ? formatNumber(post.likeCount) : "-"}
             </div>
 
           </button>

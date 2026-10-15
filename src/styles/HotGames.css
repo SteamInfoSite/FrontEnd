@@ -101,12 +101,12 @@
 }
 
 .hot-games-table th:first-child {
-  width: 56px;
+  width: 112px;
   text-align: center;
 }
 
 .hot-games-table th:last-child {
-  width: 112px;
+  width: 164px;
   text-align: right;
 }
 
@@ -125,6 +125,8 @@
   font-size: 20px;
   font-weight: 700;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .hot-game-link {
@@ -306,6 +308,18 @@
 }
 
 @media (max-width: 700px) {
+  .hot-games-results {
+    overflow-x: auto;
+  }
+
+  .hot-games-table {
+    min-width: 650px;
+  }
+
+  .hot-games-table.new-games-table {
+    min-width: 760px;
+  }
+
   .hot-games-page {
     flex-direction: column;
     height: 100vh;
@@ -358,14 +372,6 @@
 
   .hot-games-content {
     margin: 0 16px;
-  }
-
-  .hot-games-table th:first-child {
-    width: 40px;
-  }
-
-  .hot-games-table th:last-child {
-    width: 80px;
   }
 
   .hot-games-table th,

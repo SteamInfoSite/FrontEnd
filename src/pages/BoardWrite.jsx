@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import {
   createPost,
   getMyDisplayName,
@@ -18,6 +19,7 @@ const CATEGORY_VALUES = {
 };
 
 function BoardWrite() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { loggedIn, status } = useAuth();
 
@@ -98,7 +100,7 @@ function BoardWrite() {
   function handleCancel() {
     if (
       (title.trim() || content.trim()) &&
-      !window.confirm("작성 중인 내용을 취소할까요?")
+      !window.confirm(t("작성 중인 내용을 취소할까요?"))
     ) {
       return;
     }
@@ -159,7 +161,7 @@ function BoardWrite() {
 
         <main className="board-write-content">
           <div className="board-write-heading">
-            <h1>Community Board</h1>
+            <h1>{t("Community Board")}</h1>
           </div>
 
           <form
@@ -170,10 +172,10 @@ function BoardWrite() {
             <div
               className="board-write-categories"
               role="group"
-              aria-label="말머리 선택"
+              aria-label={t("말머리 선택")}
             >
               <div className="board-write-category-side">
-                <span className="board-write-category-label">말머리</span>
+                <span className="board-write-category-label">{t("말머리")}</span>
 
                 {["잡담", "소식"].map((item) => (
                   <button
@@ -185,20 +187,20 @@ function BoardWrite() {
                     aria-pressed={category === item}
                     onClick={() => setCategory(item)}
                   >
-                    {item}
+                    {t(item)}
                   </button>
                 ))}
               </div>
 
               <div className="board-write-nickname-side">
-                <label htmlFor="board_nickname">닉네임</label>
+                <label htmlFor="board_nickname">{t("닉네임")}</label>
                 <input
                   id="board_nickname"
                   className="board-write-nickname"
-                  aria-label="작성자 Steam 이름"
+                  aria-label={t("작성자 Steam 이름")}
                   value={loggedIn ? displayName : ""}
                   placeholder={
-                    loggedIn ? "이름 확인 중" : "로그인이 필요합니다"
+                    loggedIn ? t("이름 확인 중") : t("로그인이 필요합니다")
                   }
                   readOnly
                 />
@@ -208,8 +210,8 @@ function BoardWrite() {
             <input
               id="post_title_input"
               className="board-write-title"
-              aria-label="게시글 제목"
-              placeholder="제목을 입력해 주세요."
+              aria-label={t("게시글 제목")}
+              placeholder={t("제목을 입력해 주세요.")}
               maxLength={200}
               required
               value={title}
@@ -220,38 +222,38 @@ function BoardWrite() {
               <div
                 className="board-write-toolbar"
                 role="group"
-                aria-label="본문 서식 도구"
+                aria-label={t("본문 서식 도구")}
               >
-                <button type="button" disabled title="준비 중">
-                  이미지
+                <button type="button" disabled title={t("준비 중")}>
+                  {t("이미지")}
                 </button>
-                <button type="button" disabled title="준비 중">
-                  동영상
+                <button type="button" disabled title={t("준비 중")}>
+                  {t("동영상")}
                 </button>
-                <button type="button" disabled title="준비 중">
-                  링크
+                <button type="button" disabled title={t("준비 중")}>
+                  {t("링크")}
                 </button>
 
                 <select
                   id="editor_font_select"
-                  aria-label="글꼴"
+                  aria-label={t("글꼴")}
                   defaultValue=""
                   disabled
                 >
-                  <option value="">글꼴</option>
+                  <option value="">{t("글꼴")}</option>
                 </select>
 
                 <select
-                  aria-label="글자 크기"
+                  aria-label={t("글자 크기")}
                   defaultValue=""
                   disabled
                 >
-                  <option value="">크기</option>
+                  <option value="">{t("크기")}</option>
                 </select>
 
                 <button
                   type="button"
-                  aria-label="굵게"
+                  aria-label={t("굵게")}
                   aria-pressed={!!formats.bold}
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => applyFormat("bold")}
@@ -261,7 +263,7 @@ function BoardWrite() {
 
                 <button
                   type="button"
-                  aria-label="기울임"
+                  aria-label={t("기울임")}
                   aria-pressed={!!formats.italic}
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => applyFormat("italic")}
@@ -271,7 +273,7 @@ function BoardWrite() {
 
                 <button
                   type="button"
-                  aria-label="밑줄"
+                  aria-label={t("밑줄")}
                   aria-pressed={!!formats.underline}
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => applyFormat("underline")}
@@ -281,19 +283,19 @@ function BoardWrite() {
 
                 <select
                   id="editor_text_color_select"
-                  aria-label="글자색"
+                  aria-label={t("글자색")}
                   defaultValue=""
                   disabled
                 >
-                  <option value="">글자색</option>
+                  <option value="">{t("글자색")}</option>
                 </select>
 
                 <select
-                  aria-label="글자 배경색"
+                  aria-label={t("글자 배경색")}
                   defaultValue=""
                   disabled
                 >
-                  <option value="">글자 배경색</option>
+                  <option value="">{t("글자 배경색")}</option>
                 </select>
 
                 <button
@@ -302,11 +304,11 @@ function BoardWrite() {
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => applyFormat("insertUnorderedList")}
                 >
-                  목록
+                  {t("목록")}
                 </button>
 
                 <span className="board-write-tool-hint">
-                  이미지·동영상 업로드 준비 중
+                  {t("이미지·동영상 업로드 준비 중")}
                 </span>
               </div>
 
@@ -318,8 +320,8 @@ function BoardWrite() {
                 suppressContentEditableWarning
                 role="textbox"
                 aria-multiline="true"
-                aria-label="게시글 내용"
-                data-placeholder="내용을 입력해 주세요."
+                aria-label={t("게시글 내용")}
+                data-placeholder={t("내용을 입력해 주세요.")}
                 onInput={() => {
                   setContent(editorRef.current.innerText);
                   rememberSelection();
@@ -346,7 +348,7 @@ function BoardWrite() {
             </div>
 
             <p className="board-write-message" role="status">
-              {message}
+              {t(message)}
             </p>
 
             <div className="board-write-actions">
@@ -356,7 +358,7 @@ function BoardWrite() {
                 disabled={submitting}
                 onClick={handleCancel}
               >
-                취소
+                {t("취소")}
               </button>
 
               <button
@@ -364,7 +366,7 @@ function BoardWrite() {
                 className="board-write-submit"
                 disabled={status !== "ready" || !loggedIn || submitting}
               >
-                {submitting ? "등록 중" : "등록"}
+                {submitting ? t("등록 중") : t("등록")}
               </button>
             </div>
           </form>

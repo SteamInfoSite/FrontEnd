@@ -5,45 +5,46 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import SteamApiKeyPanel from "../components/SteamApiKeyPanel";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { getMyLibrary } from "../services/libraryService";
 
 import "../styles/Social.css";
 import "../styles/Library.css";
 
-function formatPlaytime(minutes) {
+function formatPlaytime(minutes, t) {
   if (!Number.isFinite(minutes) || minutes < 0) {
-    return "확인 불가";
+    return t("확인 불가");
   }
 
   const totalMinutes = Math.floor(minutes);
   const hours = Math.floor(totalMinutes / 60);
   const remainingMinutes = totalMinutes % 60;
 
-  if (hours === 0) return `${remainingMinutes}분`;
-  if (remainingMinutes === 0) return `${hours}시간`;
+  if (hours === 0) return t("{{minutes}}분", { minutes: remainingMinutes });
+  if (remainingMinutes === 0) return t("{{hours}}시간", { hours });
 
-  return `${hours}시간 ${remainingMinutes}분`;
+  return t("{{hours}}시간 {{minutes}}분", { hours, minutes: remainingMinutes });
 }
 
-function formatLastPlayed(seconds) {
-  if (seconds === 0) return "플레이 기록 없음";
-  if (!Number.isFinite(seconds) || seconds < 0) return "확인 불가";
+function formatLastPlayed(seconds, language, t) {
+  if (seconds === 0) return t("플레이 기록 없음");
+  if (!Number.isFinite(seconds) || seconds < 0) return t("확인 불가");
 
   const date = new Date(seconds * 1000);
 
   return Number.isNaN(date.getTime())
-    ? "확인 불가"
-    : date.toLocaleDateString("ko-KR");
+    ? t("확인 불가")
+    : date.toLocaleDateString(language === "ko" ? "ko-KR" : language === "ja" ? "ja-JP" : "en-US");
 }
 
-function formatCheckedAt(value) {
+function formatCheckedAt(value, language) {
   if (!value) return "—";
 
   const date = new Date(value);
 
   return Number.isNaN(date.getTime())
     ? "—"
-    : date.toLocaleString("ko-KR");
+    : date.toLocaleString(language === "ko" ? "ko-KR" : language === "ja" ? "ja-JP" : "en-US");
 }
 
 function getRetryDelay(value) {
@@ -61,6 +62,7 @@ function getRetryDelay(value) {
 }
 
 function LibraryGameCard({ game }) {
+  const { language, t } = useLanguage();
   const navigate = useNavigate();
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -78,7 +80,7 @@ function LibraryGameCard({ game }) {
         className="library-game-open"
         type="button"
         disabled={!canOpenDetail}
-        aria-label={`${game.gameName} 상세 정보 보기`}
+        aria-label={t("{{title}} 상세 정보 보기", { title: game.gameName })}
         onClick={() => navigate(`/games/detail/${game.appId}`)}
       >
         {game.headerImage && !imageFailed ? (
@@ -91,7 +93,7 @@ function LibraryGameCard({ game }) {
           />
         ) : (
           <div className="library-game-image library-game-placeholder">
-            이미지 없음
+            {t("이미지 없음")}
           </div>
         )}
 
@@ -101,28 +103,28 @@ function LibraryGameCard({ game }) {
       <div className="library-game-info">
         <dl>
           <div>
-            <dt>누적 플레이</dt>
-            <dd>{formatPlaytime(game.playtimeForever)}</dd>
+            <dt>{t("누적 플레이")}</dt>
+            <dd>{formatPlaytime(game.playtimeForever, t)}</dd>
           </div>
 
           <div>
-            <dt>최근 2주</dt>
+            <dt>{t("최근 2주")}</dt>
             <dd>
               {noRecentPlay
-                ? "플레이 기록 없음"
-                : formatPlaytime(game.playtimeTwoWeeks)}
+                ? t("플레이 기록 없음")
+                : formatPlaytime(game.playtimeTwoWeeks, t)}
             </dd>
           </div>
 
           <div>
-            <dt>마지막 플레이</dt>
-            <dd>{formatLastPlayed(game.lastPlayed)}</dd>
+            <dt>{t("마지막 플레이")}</dt>
+            <dd>{formatLastPlayed(game.lastPlayed, language, t)}</dd>
           </div>
         </dl>
 
         {!canOpenDetail && (
           <p className="library-detail-unavailable">
-            사이트 상세 정보가 없는 항목입니다.
+            {t("사이트 상세 정보가 없는 항목입니다.")}
           </p>
         )}
       </div>
@@ -131,6 +133,7 @@ function LibraryGameCard({ game }) {
 }
 
 function LibraryContent() {
+  const { language, t, formatNumber } = useLanguage();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -202,7 +205,7 @@ function LibraryContent() {
   if (loading) {
     return (
       <p className="library-message" role="status">
-        보유 게임을 불러오는 중입니다.
+        {t("보유 게임을 불러오는 중입니다.")}
       </p>
     );
   }
@@ -211,7 +214,7 @@ function LibraryContent() {
     return (
       <section className="library-message">
         <p className="social-profile-error" role="alert">
-          {error.message || "보유 게임을 불러오지 못했습니다."}
+          {t(error.message || "보유 게임을 불러오지 못했습니다.")}
         </p>
 
         {error.status === 401 ? (
@@ -220,7 +223,7 @@ function LibraryContent() {
             type="button"
             onClick={() => navigate("/login")}
           >
-            로그인하러 가기
+            {t("로그인하러 가기")}
           </button>
         ) : (
           <button
@@ -230,8 +233,8 @@ function LibraryContent() {
             onClick={reload}
           >
             {remainingSeconds > 0
-              ? `${remainingSeconds}초 후 다시 시도`
-              : "다시 불러오기"}
+              ? t("{{seconds}}초 후 다시 시도", { seconds: remainingSeconds })
+              : t("다시 불러오기")}
           </button>
         )}
       </section>
@@ -247,17 +250,17 @@ function LibraryContent() {
         aria-labelledby="library_games_title"
       >
         <div className="social-section-heading">
-          <h2 id="library_games_title">보유 유료 게임</h2>
-          <span>{data.games.length}개</span>
+          <h2 id="library_games_title">{t("보유 유료 게임")}</h2>
+          <span>{t("{{count}}개", { count: formatNumber(data.games.length) })}</span>
         </div>
 
         <p className="library-checked-at">
-          조회 시각: {formatCheckedAt(data.checkedAt)}
+          {t("조회 시각: {{date}}", { date: formatCheckedAt(data.checkedAt, language) })}
         </p>
 
         {data.games.length === 0 ? (
           <p className="library-message">
-            현재 확인된 보유 유료 게임이 없습니다.
+            {t("현재 확인된 보유 유료 게임이 없습니다.")}
           </p>
         ) : (
           <div className="library-game-grid">
@@ -271,11 +274,11 @@ function LibraryContent() {
       {data.unclassifiedGames.length > 0 && (
         <details className="library-unclassified">
           <summary>
-            추가 보유 항목 {data.unclassifiedGames.length}개
+            {t("추가 보유 항목 {{count}}개", { count: formatNumber(data.unclassifiedGames.length) })}
           </summary>
 
           <p>
-            유료 게임 여부를 확인하지 못한 보유 항목입니다.
+            {t("유료 게임 여부를 확인하지 못한 보유 항목입니다.")}
           </p>
 
           <div className="library-game-grid">
@@ -290,6 +293,7 @@ function LibraryContent() {
 }
 
 function Library() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { loggedIn, status, steamId, refreshAuth } = useAuth();
 
@@ -303,26 +307,26 @@ function Library() {
         <main id="library_content" className="social-content">
           <div className="social-heading">
             <div>
-              <h1>Library</h1>
-              <p>내가 보유한 유료 게임과 플레이 기록을 확인하세요.</p>
+              <h1>{t("Library")}</h1>
+              <p>{t("내가 보유한 유료 게임과 플레이 기록을 확인하세요.")}</p>
             </div>
           </div>
 
           {status === "loading" ? (
             <p className="social-loading" role="status">
-              로그인 상태를 확인하는 중입니다.
+              {t("로그인 상태를 확인하는 중입니다.")}
             </p>
           ) : status === "error" ? (
             <section className="library-message">
               <p className="social-profile-error" role="alert">
-                로그인 상태를 확인하지 못했습니다.
+                {t("로그인 상태를 확인하지 못했습니다.")}
               </p>
               <button
                 className="social-profile-button"
                 type="button"
                 onClick={refreshAuth}
               >
-                다시 확인
+                {t("다시 확인")}
               </button>
             </section>
           ) : loggedIn ? (
@@ -335,15 +339,15 @@ function Library() {
           ) : (
             <section className="social-login-notice">
               <div className="social-login-message">
-                <h2>내 보유 게임을 보려면 로그인이 필요합니다</h2>
+                <h2>{t("내 보유 게임을 보려면 로그인이 필요합니다")}</h2>
                 <p>
-                  Steam 계정으로 로그인하고 API 키를 등록해 주세요.
+                  {t("Steam 계정으로 로그인하고 API 키를 등록해 주세요.")}
                 </p>
                 <button
                   type="button"
                   onClick={() => navigate("/login")}
                 >
-                  Steam으로 로그인
+                  {t("Steam으로 로그인")}
                 </button>
               </div>
             </section>

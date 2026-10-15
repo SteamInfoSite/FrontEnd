@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMySteamFriends } from "../services/socialService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const stateLabels = {
   0: "오프라인",
@@ -63,14 +64,14 @@ function getStatus(friend) {
   return { label, style: "online" };
 }
 
-function formatDate(value) {
+function formatDate(value, language) {
   if (!value) return "—";
 
   const date = new Date(value);
 
   return Number.isNaN(date.getTime())
     ? "—"
-    : date.toLocaleString("ko-KR");
+    : date.toLocaleString(language === "ko" ? "ko-KR" : language === "ja" ? "ja-JP" : "en-US");
 }
 
 function getRetryDelay(value) {
@@ -116,6 +117,7 @@ function FriendAvatar({ friend }) {
 }
 
 function SteamFriendsList() {
+  const { language, t, formatNumber } = useLanguage();
   const [friends, setFriends] = useState([]);
   const [checkedAt, setCheckedAt] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -206,21 +208,21 @@ function SteamFriendsList() {
       aria-busy={loading}
     >
       <div className="social-section-heading">
-        <h2 id="social_friends_title">친구 목록</h2>
-        {!loading && !error && <span>{friends.length}명</span>}
+        <h2 id="social_friends_title">{t("친구 목록")}</h2>
+        {!loading && !error && <span>{t("{{count}}명", { count: formatNumber(friends.length) })}</span>}
       </div>
 
       {loading ? (
-        <p role="status">친구 목록을 불러오는 중입니다.</p>
+        <p role="status">{t("친구 목록을 불러오는 중입니다.")}</p>
       ) : error ? (
         <div className="social-friends-message">
           <p className="social-profile-error" role="alert">
-            {error.message || "친구 목록을 불러오지 못했습니다."}
+            {t(error.message || "친구 목록을 불러오지 못했습니다.")}
           </p>
 
           {error.status === 401 ? (
             <a className="social-profile-button" href="/login">
-              로그인하러 가기
+              {t("로그인하러 가기")}
             </a>
           ) : (
             <button
@@ -230,22 +232,22 @@ function SteamFriendsList() {
               onClick={reload}
             >
               {remainingSeconds > 0
-                ? `${remainingSeconds}초 후 다시 시도`
-                : "다시 불러오기"}
+                ? t("{{seconds}}초 후 다시 시도", { seconds: remainingSeconds })
+                : t("다시 불러오기")}
             </button>
           )}
         </div>
       ) : (
         <>
           <p className="social-friends-checked">
-            조회 시각: {formatDate(checkedAt)}
+            {t("조회 시각: {{date}}", { date: formatDate(checkedAt, language) })}
           </p>
 
           <div
             id="social_friend_filters"
             className="social-friend-filters"
             role="group"
-            aria-label="친구 상태 필터"
+            aria-label={t("친구 상태 필터")}
           >
             {filters.map((item) => (
               <button
@@ -255,16 +257,16 @@ function SteamFriendsList() {
                 aria-pressed={filter === item.id}
                 onClick={() => setFilter(item.id)}
               >
-                {item.label} {counts[item.id]}
+                {t(item.label)} {formatNumber(counts[item.id])}
               </button>
             ))}
           </div>
 
           {visibleFriends.length === 0 ? (
             <p className="social-friends-message" role="status">
-              {friends.length === 0
+              {t(friends.length === 0
                 ? "등록된 Steam 친구가 없습니다."
-                : "선택한 조건에 해당하는 친구가 없습니다."}
+                : "선택한 조건에 해당하는 친구가 없습니다.")}
             </p>
           ) : (
             <div className="social-table-scroll">
@@ -274,10 +276,10 @@ function SteamFriendsList() {
               >
                 <thead>
                   <tr>
-                    <th scope="col">친구</th>
-                    <th scope="col">상태</th>
-                    <th scope="col">플레이 중</th>
-                    <th scope="col">마지막 로그오프</th>
+                    <th scope="col">{t("친구")}</th>
+                    <th scope="col">{t("상태")}</th>
+                    <th scope="col">{t("플레이 중")}</th>
+                    <th scope="col">{t("마지막 로그오프")}</th>
                   </tr>
                 </thead>
 
@@ -292,12 +294,12 @@ function SteamFriendsList() {
                             <FriendAvatar friend={friend} />
                             <span>
                               <strong>
-                                {friend.nickname || "프로필 확인 불가"}
+                                {friend.nickname || t("프로필 확인 불가")}
                               </strong>
                               <small>
                                 {friend.profileAvailable
-                                  ? "Steam 친구"
-                                  : "프로필 정보를 받지 못했습니다."}
+                                  ? t("Steam 친구")
+                                  : t("프로필 정보를 받지 못했습니다.")}
                               </small>
                             </span>
                           </div>
@@ -310,7 +312,7 @@ function SteamFriendsList() {
                               `social-friend-status--${state.style}`
                             }
                           >
-                            {state.label}
+                            {t(state.label)}
                           </span>
                         </td>
 
@@ -322,7 +324,7 @@ function SteamFriendsList() {
                           }
                         >
                           {isPlaying(friend)
-                            ? friend.gameName || "게임명 확인 불가"
+                            ? friend.gameName || t("게임명 확인 불가")
                             : "—"}
                         </td>
 
@@ -330,7 +332,8 @@ function SteamFriendsList() {
                           {formatDate(
                             friend.lastLogoff > 0
                               ? friend.lastLogoff * 1000
-                              : null
+                              : null,
+                            language
                           )}
                         </td>
                       </tr>
