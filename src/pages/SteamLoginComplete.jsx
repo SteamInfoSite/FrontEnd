@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/Login.css";
 
 function SteamLoginComplete() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const {
@@ -31,24 +33,24 @@ function SteamLoginComplete() {
   return (
     <main className="login-page">
       <section className="login-box">
-        <h2>Steam 로그인 확인</h2>
+        <h2>{t("Steam 로그인 확인")}</h2>
 
         {message ? (
           <>
-            <p role="alert">{message}</p>
+            <p role="alert">{t(message)}</p>
 
             <button
               type="button"
               className="steam-login-button"
               onClick={refreshAuth}
             >
-              다시 확인
+              {t("다시 확인")}
             </button>
 
-            <Link to="/login">로그인 화면으로 돌아가기</Link>
+            <Link to="/login">{t("로그인 화면으로 돌아가기")}</Link>
           </>
         ) : (
-          <p role="status">로그인 상태를 확인하고 있습니다.</p>
+          <p role="status">{t("로그인 상태를 확인하고 있습니다.")}</p>
         )}
       </section>
     </main>

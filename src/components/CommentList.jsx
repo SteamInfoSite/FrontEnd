@@ -1,12 +1,15 @@
+import { useLanguage } from "../contexts/LanguageContext";
+
 function formatDate(value) {
   return value ? value.replace("T", " ").slice(0, 16) : "";
 }
 
 function CommentList({ comments = [] }) {
+  const { t } = useLanguage();
   return (
     <div className="comment-list">
       {comments.length === 0 && (
-        <p className="comment-empty">아직 댓글이 없습니다.</p>
+        <p className="comment-empty">{t("아직 댓글이 없습니다.")}</p>
       )}
       {comments.map((comment) => (
         <div

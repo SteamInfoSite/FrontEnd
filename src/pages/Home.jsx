@@ -1,81 +1,110 @@
 import { useEffect, useState } from "react";
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import GameCarousel from "../components/GameCarousel";
-import { getNewGames, getHotGames } from "../services/gameService";
+import { getHotGames, getNewGames } from "../services/gameService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/Home.css";
 
-function HomeGameSection({ title, result }) {
+const PAGE_SIZE = 10;
+
+function HomeGameSection({ title, result, onRetry }) {
+  const { t } = useLanguage();
   if (result.status === "success" && result.items.length > 0) {
     return <GameCarousel title={title} games={result.items} />;
   }
 
-  const message =
-    result.status === "loading"
-      ? "게임을 불러오는 중입니다."
-      : result.status === "error"
-        ? "게임을 불러오지 못했습니다. 새로고침해 주세요."
-        : "표시할 게임이 없습니다.";
+  const message = result.status === "loading"
+    ? t("게임을 불러오는 중입니다.")
+    : result.status === "error"
+      ? t("게임 목록을 불러오지 못했습니다.")
+      : t("표시할 게임이 없습니다.");
 
   return (
     <section className="game-section">
       <h2>{title}</h2>
-      <p role={result.status === "error" ? "alert" : "status"}>
-        {message}
-      </p>
+      <div className="game-section-message" role={result.status === "error" ? "alert" : "status"}>
+        <p>{message}</p>
+        {result.status === "error" && (
+          <button type="button" onClick={onRetry}>{t("다시 시도")}</button>
+        )}
+      </div>
     </section>
   );
 }
 
 function Home() {
-  const [newResult, setNewResult] = useState({
-    status: "loading",
-    items: [],
-  });
-  const [popularResult, setPopularResult] = useState({
-    status: "loading",
-    items: [],
-  });
+  const { t } = useLanguage();
+  const [newGames, setNewGames] = useState({ status: "loading", items: [] });
+  const [popularGames, setPopularGames] = useState({ status: "loading", items: [] });
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
+    setNewGames({ status: "loading", items: [] });
+    setPopularGames({ status: "loading", items: [] });
 
-    getNewGames({ pageSize: 10, signal: controller.signal })
-      .then((data) => {
+    getNewGames({
+      platform: "all",
+      sort: "released_desc",
+      page: 1,
+      pageSize: PAGE_SIZE,
+      signal: controller.signal,
+    })
+      .then(({ items }) => {
         if (!controller.signal.aborted) {
-          setNewResult({ status: "success", items: data.items });
+          setNewGames({ status: "success", items });
         }
       })
       .catch(() => {
         if (!controller.signal.aborted) {
-          setNewResult({ status: "error", items: [] });
+          setNewGames({ status: "error", items: [] });
         }
       });
 
-    getHotGames({ pageSize: 10, signal: controller.signal })
-      .then((data) => {
+    getHotGames({
+      platform: "all",
+      page: 1,
+      pageSize: PAGE_SIZE,
+      signal: controller.signal,
+    })
+      .then(({ items }) => {
         if (!controller.signal.aborted) {
-          setPopularResult({ status: "success", items: data.items });
+          setPopularGames({ status: "success", items });
         }
       })
       .catch(() => {
         if (!controller.signal.aborted) {
-          setPopularResult({ status: "error", items: [] });
+          setPopularGames({ status: "error", items: [] });
         }
       });
 
     return () => controller.abort();
-  }, []);
+  }, [retry]);
+
+  const handleRetry = () => setRetry((previous) => previous + 1);
 
   return (
     <div className="home">
       <Sidebar />
+
       <div className="main-area">
         <Header />
+
         <main className="content">
-          <HomeGameSection title="신규 게임들" result={newResult} />
-          <HomeGameSection title="역대 인기 게임들" result={popularResult} />
+          <HomeGameSection
+            title={t("신규 게임들")}
+            result={newGames}
+            onRetry={handleRetry}
+          />
+
+          <HomeGameSection
+            title={t("역대 인기 게임들")}
+            result={popularGames}
+            onRetry={handleRetry}
+          />
         </main>
       </div>
     </div>

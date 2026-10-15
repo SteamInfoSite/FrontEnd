@@ -5,12 +5,14 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Pagination from "../components/Pagination";
 import { getNewGames, hotGamePlatforms } from "../services/gameService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/HotGames.css";
 
 const PAGE_SIZE = 10;
 
 function NewGames() {
+  const { t, formatNumber } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";
@@ -69,47 +71,47 @@ function NewGames() {
         <main id="new_games_content" className="hot-games-content">
           <div className="hot-games-heading">
             <div>
-              <h1>New game</h1>
-              <p>오늘을 포함한 최근 30일 동안 출시된 게임을 확인하세요.</p>
+              <h1>{t("New game")}</h1>
+              <p>{t("오늘을 포함한 최근 30일 동안 출시된 게임을 확인하세요.")}</p>
             </div>
           </div>
 
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
-              <select id="new_platform_select" aria-label="플랫폼" value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
-                <option value="all">모든 플랫폼</option>
+              <select id="new_platform_select" aria-label={t("플랫폼")} value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
+                <option value="all">{t("모든 플랫폼")}</option>
                 {hotGamePlatforms.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </select>
             </div>
-            <select id="new_sort_select" aria-label="정렬" value={sort} onChange={(event) => changeFilter("sort", event.target.value)}>
-              <option value="released_desc">최신 출시 순</option>
-              <option value="released_asc">오래된 출시 순</option>
+            <select id="new_sort_select" aria-label={t("정렬")} value={sort} onChange={(event) => changeFilter("sort", event.target.value)}>
+              <option value="released_desc">{t("최신 출시 순")}</option>
+              <option value="released_asc">{t("오래된 출시 순")}</option>
             </select>
           </div>
 
           <div className="hot-games-results" aria-busy={status === "loading"}>
-            {status === "loading" && <p id="new_games_loading" className="hot-games-state" role="status">신작 목록을 불러오는 중입니다.</p>}
+            {status === "loading" && <p id="new_games_loading" className="hot-games-state" role="status">{t("신작 목록을 불러오는 중입니다.")}</p>}
             {status === "error" && (
               <div id="new_games_error" className="hot-games-state" role="alert">
-                <p>신작 목록을 불러오지 못했습니다.</p>
-                <button id="new_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>다시 시도</button>
+                <p>{t("신작 목록을 불러오지 못했습니다.")}</p>
+                <button id="new_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>{t("다시 시도")}</button>
               </div>
             )}
             {status === "success" && result.totalCount === 0 && (
               <div id="new_games_empty" className="hot-games-state" role="status">
-                <p>조건에 맞는 신작이 없습니다.</p>
-                <button id="new_filters_reset_button" type="button" onClick={() => setSearchParams({})}>필터 초기화</button>
+                <p>{t("조건에 맞는 신작이 없습니다.")}</p>
+                <button id="new_filters_reset_button" type="button" onClick={() => setSearchParams({})}>{t("필터 초기화")}</button>
               </div>
             )}
             {status === "success" && result.totalCount > 0 && (
               <>
-                <table id="new_game_list" className="hot-games-table new-games-table" aria-label="최근 출시 게임 목록">
+                <table id="new_game_list" className="hot-games-table new-games-table" aria-label={t("최근 출시 게임 목록")}>
                   <thead>
                     <tr>
-                      <th scope="col">번호</th>
-                      <th scope="col">게임명 / 장르</th>
-                      <th scope="col">출시일</th>
-                      <th scope="col">가격</th>
+                      <th scope="col">{t("번호")}</th>
+                      <th scope="col">{t("게임명 / 장르")}</th>
+                      <th scope="col">{t("출시일")}</th>
+                      <th scope="col">{t("가격")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -120,12 +122,12 @@ function NewGames() {
                           <button
                             type="button"
                             className="hot-game-link"
-                            aria-label={`${game.title} 상세 정보 보기`}
+                            aria-label={t("{{title}} 상세 정보 보기", { title: game.title })}
                             onClick={() => navigate(`/games/detail/${game.appId}`)}
                           >
                             <span className="hot-game-image">
                               {game.image ? <img src={game.image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null}
-                              <span>게임 이미지</span>
+                              <span>{t("게임 이미지")}</span>
                             </span>
                             <span className="hot-game-description">
                               <strong>{game.title}</strong>
@@ -133,8 +135,8 @@ function NewGames() {
                             </span>
                           </button>
                         </td>
-                        <td className="new-game-date">{game.releaseDate}</td>
-                        <td className="price-game-value">{game.priceText}</td>
+                        <td className="new-game-date">{t(game.releaseDate)}</td>
+                        <td className="price-game-value">{t(game.priceText)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -142,7 +144,7 @@ function NewGames() {
                 <nav
                   id="new_game_pagination"
                   className="hot-game-pagination"
-                  aria-label="신작 목록 페이지"
+                  aria-label={t("신작 목록 페이지")}
                 >
                   <Pagination
                     currentPage={page}
@@ -151,7 +153,7 @@ function NewGames() {
                     groupNavigation
                   />
                 </nav>
-                <p className="hot-games-total" role="status">전체 {result.totalCount}개 · {page} / {totalPages} 페이지</p>
+                <p className="hot-games-total" role="status">{t("전체 {{count}}개 · {{page}} / {{pages}} 페이지", { count: formatNumber(result.totalCount), page, pages: totalPages })}</p>
               </>
             )}
           </div>

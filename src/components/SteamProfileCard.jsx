@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { getMySteamProfile } from "../services/socialService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 function SteamProfileCard() {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -41,21 +43,21 @@ function SteamProfileCard() {
       aria-labelledby="social_my_profile_title"
       aria-busy={loading}
     >
-      <h2 id="social_my_profile_title">내 프로필</h2>
+      <h2 id="social_my_profile_title">{t("내 프로필")}</h2>
 
       {loading ? (
-        <p role="status">내 프로필을 불러오는 중입니다.</p>
+        <p role="status">{t("내 프로필을 불러오는 중입니다.")}</p>
       ) : error ? (
         <div>
           <p className="social-profile-error" role="alert">
-            {error}
+            {t(error)}
           </p>
           <button
             className="social-profile-button"
             type="button"
             onClick={() => setRetry((value) => value + 1)}
           >
-            다시 불러오기
+            {t("다시 불러오기")}
           </button>
         </div>
       ) : profile ? (
@@ -64,7 +66,7 @@ function SteamProfileCard() {
             <img
               className="social-my-profile-avatar"
               src={profile.avatarUrl}
-              alt={`${profile.nickname || "Steam 사용자"}의 프로필 사진`}
+              alt={t("{{name}}의 프로필 사진", { name: profile.nickname || t("Steam 사용자") })}
               width="80"
               height="80"
               onError={() => setImageFailed(true)}
@@ -72,14 +74,14 @@ function SteamProfileCard() {
           ) : (
             <span
               className="social-my-profile-avatar social-my-profile-placeholder"
-              aria-label="프로필 사진 없음"
+              aria-label={t("프로필 사진 없음")}
             >
               {(profile.nickname || "?").slice(0, 1)}
             </span>
           )}
 
           <strong className="social-my-profile-name">
-            {profile.nickname || "Steam 사용자"}
+            {profile.nickname || t("Steam 사용자")}
           </strong>
 
           {profile.profileUrl && (
@@ -89,7 +91,7 @@ function SteamProfileCard() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Steam 프로필로 이동 ↗
+              {t("Steam 프로필로 이동 ↗")}
             </a>
           )}
         </div>

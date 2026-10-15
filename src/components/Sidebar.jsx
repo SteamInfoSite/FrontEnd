@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRequireLogin } from "../hooks/useRequireLogin";
+import { useLanguage } from "../contexts/LanguageContext";
 import {
   useNavigate,
   useLocation,
@@ -26,6 +27,7 @@ import scheduleIcon from "../assets/ScheduleIcon.svg";
 
 
 function Sidebar() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -81,7 +83,8 @@ function Sidebar() {
     }
 
     if (menuName === "Setting") {
-      window.alert("설정 기능은 준비 중입니다");
+      navigate("/setting");
+      return;
     }
   };
 
@@ -106,13 +109,17 @@ function Sidebar() {
       return location.pathname === "/library";
     }
 
+    if (menuName === "Setting") {
+      return location.pathname === "/setting";
+    }
+
     return false;
   };
 
   return (
     <aside id="site_sidebar" className="sidebar">
       <div className="site-info">
-        <img src={logo} alt="SteamInfoSite Logo" />
+        <img src={logo} alt={t("SteamInfoSite Logo")} />
         <span>SteamInfoSite</span>
       </div>
 
@@ -131,7 +138,7 @@ function Sidebar() {
               aria-expanded={menu.hasSubmenu ? isGameOpen : undefined}
             >
               <img src={menu.icon} alt="" />
-              <span>{menu.name}</span>
+              <span>{t(menu.name)}</span>
             </button>
 
             {/* Game 메뉴 클릭 시 서브메뉴 목록 출력 */}
@@ -146,7 +153,7 @@ function Sidebar() {
                     onClick={() => { if (sub.path) navigate(sub.path); }}
                   >
                     <img src={sub.icon} alt="" />
-                    <span>{sub.name}</span>
+                    <span>{t(sub.name)}</span>
                   </button>
                 ))}
               </div>

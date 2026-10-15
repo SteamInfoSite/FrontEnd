@@ -3,11 +3,13 @@ import {
   getSteamApiKeyStatus,
   registerSteamApiKey,
 } from "../services/steamApiKeyService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 function SteamApiKeyPanel({
   children,
   description = "프로필과 친구 정보를 조회하려면 API 키를 등록해 주세요.",
 }) {
+  const { t } = useLanguage();
   const [loadStatus, setLoadStatus] = useState("loading");
   const [usable, setUsable] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -84,7 +86,7 @@ function SteamApiKeyPanel({
   if (loadStatus === "loading") {
     return (
       <section className="steam-api-key-panel">
-        <p role="status">API 키 등록 상태를 확인하는 중입니다.</p>
+        <p role="status">{t("API 키 등록 상태를 확인하는 중입니다.")}</p>
       </section>
     );
   }
@@ -92,12 +94,12 @@ function SteamApiKeyPanel({
   if (loadStatus === "error") {
     return (
       <section className="steam-api-key-panel">
-        <p className="steam-api-key-error" role="alert">{error}</p>
+        <p className="steam-api-key-error" role="alert">{t(error)}</p>
         <button
           type="button"
           onClick={() => setRetry((value) => value + 1)}
         >
-          다시 확인
+          {t("다시 확인")}
         </button>
       </section>
     );
@@ -107,9 +109,9 @@ function SteamApiKeyPanel({
       return (
         <>
           <section className="steam-api-key-panel">
-            <h2>Steam API 연결</h2>
+            <h2>{t("Steam API 연결")}</h2>
             <p className="steam-api-key-success" role="status">
-              사용 가능한 API 키가 등록되어 있습니다.
+              {t("사용 가능한 API 키가 등록되어 있습니다.")}
             </p>
           </section>
 
@@ -123,19 +125,19 @@ function SteamApiKeyPanel({
       className="steam-api-key-panel"
       aria-labelledby="steam_api_key_title"
     >
-      <h2 id="steam_api_key_title">Steam API 키 등록</h2>
-      <p>{description}</p>
+      <h2 id="steam_api_key_title">{t("Steam API 키 등록")}</h2>
+      <p>{t(description)}</p>
 
       <a
         href="https://steamcommunity.com/dev/apikey"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Steam에서 API 키 확인하기
+        {t("Steam에서 API 키 확인하기")}
       </a>
 
       <form onSubmit={handleSubmit} aria-busy={saving}>
-        <label htmlFor="steam_api_key_input">Steam API 키</label>
+        <label htmlFor="steam_api_key_input">{t("Steam API 키")}</label>
         <input
           id="steam_api_key_input"
           type="password"
@@ -144,7 +146,7 @@ function SteamApiKeyPanel({
           autoComplete="new-password"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="32자리 API 키"
+          placeholder={t("32자리 API 키")}
           disabled={saving}
           required
         />
@@ -153,12 +155,12 @@ function SteamApiKeyPanel({
           type="submit"
           disabled={saving || !apiKey.trim()}
         >
-          {saving ? "검증 및 등록 중…" : "API 키 등록"}
+          {t(saving ? "검증 및 등록 중…" : "API 키 등록")}
         </button>
 
         {error && (
           <p className="steam-api-key-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
       </form>

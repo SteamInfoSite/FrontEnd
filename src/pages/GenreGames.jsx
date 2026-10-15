@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
@@ -15,6 +16,7 @@ import "../styles/HotGames.css";
 const PAGE_SIZE = 10;
 
 function GenreGames() {
+  const { t, formatNumber } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -112,14 +114,14 @@ function GenreGames() {
         <Header />
         <main id="genre_games_content" className="hot-games-content">
           <div className="hot-games-heading">
-            <div><h1>Genre</h1><p>장르별 게임을 확인하세요.</p></div>
+            <div><h1>{t("Genre")}</h1><p>{t("장르별 게임을 확인하세요.")}</p></div>
           </div>
 
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
               <select
                 id="genre_genre_select"
-                aria-label="장르"
+                aria-label={t("장르")}
                 value={genre}
                 disabled={genreStatus !== "success"}
                 onChange={(event) =>
@@ -128,8 +130,8 @@ function GenreGames() {
               >
                 <option value="all">
                   {genreStatus === "loading"
-                    ? "장르 불러오는 중..."
-                    : "전체 장르"}
+                    ? t("장르 불러오는 중...")
+                    : t("전체 장르")}
                 </option>
 
                 {genre !== "all" && !genreList.includes(genre) && (
@@ -145,13 +147,13 @@ function GenreGames() {
 
               <select
                 id="genre_platform_select"
-                aria-label="플랫폼"
+                aria-label={t("플랫폼")}
                 value={platform}
                 onChange={(event) =>
                   changeFilter("platform", event.target.value)
                 }
               >
-                <option value="all">모든 플랫폼</option>
+                <option value="all">{t("모든 플랫폼")}</option>
 
                 {hotGamePlatforms.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -163,44 +165,44 @@ function GenreGames() {
 
             <select
               id="genre_sort_select"
-              aria-label="정렬"
+              aria-label={t("정렬")}
               value={sort}
               onChange={(event) =>
                 changeFilter("sort", event.target.value)
               }
             >
-              <option value="app_id_asc">게임 ID 순</option>
-              <option value="recommendations_desc">추천 수 높은 순</option>
-              <option value="title_asc">이름순</option>
+              <option value="app_id_asc">{t("게임 ID 순")}</option>
+              <option value="recommendations_desc">{t("추천 수 높은 순")}</option>
+              <option value="title_asc">{t("이름순")}</option>
             </select>
           </div>
 
           {genreStatus === "error" && (
             <div className="hot-games-state" role="alert">
-              <p>장르 목록을 불러오지 못했습니다.</p>
+              <p>{t("장르 목록을 불러오지 못했습니다.")}</p>
               <button
                 type="button"
                 onClick={() => setGenreRetry((value) => value + 1)}
               >
-                장르 목록 다시 불러오기
+                {t("장르 목록 다시 불러오기")}
               </button>
             </div>
           )}
 
           <div className="hot-games-results" aria-busy={status === "loading"}>
-            {status === "loading" && <p id="genre_games_loading" className="hot-games-state" role="status">게임 목록을 불러오는 중입니다.</p>}
-            {status === "error" && <div id="genre_games_error" className="hot-games-state" role="alert"><p>게임 목록을 불러오지 못했습니다.</p><button id="genre_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>다시 시도</button></div>}
-            {status === "success" && result.totalCount === 0 && <div id="genre_games_empty" className="hot-games-state" role="status"><p>조건에 맞는 게임이 없습니다.</p><button id="genre_filters_reset_button" type="button" onClick={() => setSearchParams({})}>필터 초기화</button></div>}
+            {status === "loading" && <p id="genre_games_loading" className="hot-games-state" role="status">{t("게임 목록을 불러오는 중입니다.")}</p>}
+            {status === "error" && <div id="genre_games_error" className="hot-games-state" role="alert"><p>{t("게임 목록을 불러오지 못했습니다.")}</p><button id="genre_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>{t("다시 시도")}</button></div>}
+            {status === "success" && result.totalCount === 0 && <div id="genre_games_empty" className="hot-games-state" role="status"><p>{t("조건에 맞는 게임이 없습니다.")}</p><button id="genre_filters_reset_button" type="button" onClick={() => setSearchParams({})}>{t("필터 초기화")}</button></div>}
             {status === "success" && result.totalCount > 0 && <>
-              <table id="genre_game_list" className="hot-games-table genre-games-table" aria-label="Genre 목록">
-                <thead><tr><th scope="col">번호</th><th scope="col">게임명 / 장르</th><th scope="col">추천 수</th></tr></thead>
+              <table id="genre_game_list" className="hot-games-table genre-games-table" aria-label={t("Genre 목록")}>
+                <thead><tr><th scope="col">{t("번호")}</th><th scope="col">{t("게임명 / 장르")}</th><th scope="col">{t("추천 수")}</th></tr></thead>
                 <tbody>{result.items.map((game) => <tr id={`genre_game_item_${game.id}`} key={game.id}>
                   <td className="hot-game-rank">{game.rank}</td>
                   <td>
                     <button
                       type="button"
                       className="hot-game-link"
-                      aria-label={`${game.title} 상세 정보 보기`}
+                      aria-label={t("{{title}} 상세 정보 보기", { title: game.title })}
                       onClick={() => navigate(`/games/detail/${game.appId}`)}
                     >
                       <span className="hot-game-image">
@@ -213,7 +215,7 @@ function GenreGames() {
                             }}
                           />
                         ) : null}
-                        <span>게임 이미지</span>
+                        <span>{t("게임 이미지")}</span>
                       </span>
 
                       <span className="hot-game-description">
@@ -231,15 +233,15 @@ function GenreGames() {
                   </td>
                   <td className="hot-game-count">
                     {game.recommendationsTotal == null
-                      ? "정보 없음"
-                      : game.recommendationsTotal.toLocaleString()}
+                      ? t("정보 없음")
+                      : formatNumber(game.recommendationsTotal)}
                   </td>
                 </tr>)}</tbody>
               </table>
               <nav
                 id="genre_game_pagination"
                 className="hot-game-pagination"
-                aria-label="Genre 목록 페이지"
+                aria-label={t("Genre 목록 페이지")}
               >
                 <Pagination
                   currentPage={page}
@@ -248,7 +250,7 @@ function GenreGames() {
                   groupNavigation
                 />
               </nav>
-              <p className="hot-games-total" role="status">전체 {result.totalCount}개 · {page} / {totalPages} 페이지</p>
+              <p className="hot-games-total" role="status">{t("전체 {{count}}개 · {{page}} / {{pages}} 페이지", { count: formatNumber(result.totalCount), page, pages: totalPages })}</p>
             </>}
           </div>
         </main>

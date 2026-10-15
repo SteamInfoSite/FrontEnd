@@ -6,10 +6,12 @@ import Sidebar from "../components/Sidebar";
 import BoardTable from "../components/BoardTable";
 import Pagination from "../components/Pagination";
 import { getPosts } from "../services/boardService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/Board.css";
 
 function Board() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageData, setPageData] = useState({
@@ -58,19 +60,19 @@ function Board() {
 
         <main className="board-content">
           <div className="board-top">
-            <h1>Community Board</h1>
+            <h1>{t("Community Board")}</h1>
 
             <button
               type="button"
               className="board-write-button"
               onClick={() => navigate("/board/write")}
             >
-              글 쓰기
+              {t("글 쓰기")}
             </button>
           </div>
 
-          {loading && <p className="board-state" role="status">게시글을 불러오는 중입니다.</p>}
-          {error && <p className="board-state" role="alert">{errorMessage}</p>}
+          {loading && <p className="board-state" role="status">{t("게시글을 불러오는 중입니다.")}</p>}
+          {error && <p className="board-state" role="alert">{t(errorMessage)}</p>}
 
           {!loading && !error && (
             <>

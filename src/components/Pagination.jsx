@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const PAGE_GROUP_SIZE = 5;
 
@@ -8,6 +9,7 @@ function Pagination({
   onPageChange,
   groupNavigation = false,
 }) {
+  const { t } = useLanguage();
   if (totalPages < 1) return null;
 
   const startPage = groupNavigation
@@ -42,13 +44,13 @@ function Pagination({
             disabled={currentPage === 1}
             onClick={() => onPageChange(1)}
           >
-            맨앞
+            {t("맨앞")}
           </button>
 
           <button
             type="button"
             className="page-button"
-            aria-label="이전 페이지 묶음"
+            aria-label={t("이전 페이지 묶음")}
             disabled={startPage === 1}
             onClick={() =>
               onPageChange(
@@ -56,7 +58,7 @@ function Pagination({
               )
             }
           >
-            이전
+            {t("이전")}
           </button>
         </>
       )}
@@ -65,7 +67,7 @@ function Pagination({
         <button
           key={page}
           type="button"
-          aria-label={`${page}페이지`}
+          aria-label={t("{{page}}페이지", { page })}
           aria-current={
             currentPage === page ? "page" : undefined
           }
@@ -83,11 +85,11 @@ function Pagination({
           <button
             type="button"
             className="page-button"
-            aria-label="다음 페이지 묶음"
+            aria-label={t("다음 페이지 묶음")}
             disabled={endPage === totalPages}
             onClick={() => onPageChange(endPage + 1)}
           >
-            다음
+            {t("다음")}
           </button>
 
           <button
@@ -96,7 +98,7 @@ function Pagination({
             disabled={currentPage === totalPages}
             onClick={() => onPageChange(totalPages)}
           >
-            맨끝
+            {t("맨끝")}
           </button>
         </>
       )}
@@ -115,6 +117,7 @@ function Pagination({
         export default Pagination;
 
 function PageJumpForm({ currentPage, totalPages, onPageChange }) {
+  const { t, formatNumber } = useLanguage();
   const [pageInput, setPageInput] = useState("");
   const [error, setError] = useState("");
 
@@ -130,9 +133,7 @@ function PageJumpForm({ currentPage, totalPages, onPageChange }) {
       targetPage < 1 ||
       targetPage > totalPages
     ) {
-      setError(
-        `1부터 ${totalPages.toLocaleString("ko-KR")}까지의 페이지 번호를 입력해 주세요.`
-      );
+      setError(true);
       return;
     }
 
@@ -149,11 +150,11 @@ function PageJumpForm({ currentPage, totalPages, onPageChange }) {
       <label className="page-jump-label">
         <input
           type="text"
-          aria-label="이동할 페이지 번호"
+          aria-label={t("이동할 페이지 번호")}
           inputMode="numeric"
           autoComplete="off"
           value={pageInput}
-          placeholder="페이지 번호"
+          placeholder={t("페이지 번호")}
           aria-invalid={Boolean(error)}
           onChange={(event) => {
             setPageInput(event.target.value);
@@ -163,14 +164,14 @@ function PageJumpForm({ currentPage, totalPages, onPageChange }) {
       </label>
 
       <span className="page-jump-total">
-        / {totalPages.toLocaleString("ko-KR")}
+        / {formatNumber(totalPages)}
       </span>
 
-      <button type="submit">이동</button>
+      <button type="submit">{t("이동")}</button>
 
       {error && (
         <p className="page-jump-error" role="alert">
-          {error}
+          {t("1부터 {{pages}}까지의 페이지 번호를 입력해 주세요.", { pages: formatNumber(totalPages) })}
         </p>
       )}
     </form>

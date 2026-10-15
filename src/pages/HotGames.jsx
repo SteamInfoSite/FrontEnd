@@ -5,12 +5,14 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Pagination from "../components/Pagination";
 import { getHotGames, hotGamePlatforms } from "../services/gameService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import "../styles/HotGames.css";
 
 const PAGE_SIZE = 10;
 
 function HotGames() {
+  const { t, formatNumber } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const platform = hotGamePlatforms.some((item) => item.value === searchParams.get("platform")) ? searchParams.get("platform") : "all";
   const requestedPage = Number(searchParams.get("page"));
@@ -75,42 +77,42 @@ function HotGames() {
         <Header />
         <main id="hot_games_content" className="hot-games-content">
           <div className="hot-games-heading">
-            <div><h1>Hot game</h1><p>추천 수가 많은 게임을 확인하세요.</p></div>
+            <div><h1>{t("Hot game")}</h1><p>{t("추천 수가 많은 게임을 확인하세요.")}</p></div>
             <span className="hot-games-example">
-              저장된 Steam 추천 수 기준
+              {t("저장된 Steam 추천 수 기준")}
             </span>
           </div>
 
           <div className="hot-games-filters">
             <div className="hot-games-filter-group">
-              <select id="hot_platform_select" aria-label="플랫폼" value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
-                <option value="all">모든 플랫폼</option>
+              <select id="hot_platform_select" aria-label={t("플랫폼")} value={platform} onChange={(event) => changeFilter("platform", event.target.value)}>
+                <option value="all">{t("모든 플랫폼")}</option>
                 {hotGamePlatforms.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </select>
             </div>
             <span className="hot-games-example">
-              추천 수 높은 순
+              {t("추천 수 높은 순")}
             </span>
           </div>
 
           <div className="hot-games-results" aria-busy={status === "loading"}>
-            {status === "loading" && <p id="hot_games_loading" className="hot-games-state" role="status">게임 목록을 불러오는 중입니다.</p>}
+            {status === "loading" && <p id="hot_games_loading" className="hot-games-state" role="status">{t("게임 목록을 불러오는 중입니다.")}</p>}
             {status === "error" && (
               <div id="hot_games_error" className="hot-games-state" role="alert">
-                <p>게임 목록을 불러오지 못했습니다.</p>
-                <button id="hot_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>다시 시도</button>
+                <p>{t("게임 목록을 불러오지 못했습니다.")}</p>
+                <button id="hot_games_retry_button" type="button" onClick={() => setRetry((value) => value + 1)}>{t("다시 시도")}</button>
               </div>
             )}
             {status === "success" && result.totalCount === 0 && (
               <div id="hot_games_empty" className="hot-games-state" role="status">
-                <p>조건에 맞는 게임이 없습니다.</p>
-                <button id="hot_filters_reset_button" type="button" onClick={() => setSearchParams({})}>필터 초기화</button>
+                <p>{t("조건에 맞는 게임이 없습니다.")}</p>
+                <button id="hot_filters_reset_button" type="button" onClick={() => setSearchParams({})}>{t("필터 초기화")}</button>
               </div>
             )}
             {status === "success" && result.totalCount > 0 && (
               <>
-                <table id="hot_game_list" className="hot-games-table" aria-label="추천 수 기준 게임 목록">
-                  <thead><tr><th scope="col">순위</th><th scope="col">게임명 / 장르</th><th scope="col">추천 수</th></tr></thead>
+                <table id="hot_game_list" className="hot-games-table" aria-label={t("추천 수 기준 게임 목록")}>
+                  <thead><tr><th scope="col">{t("순위")}</th><th scope="col">{t("게임명 / 장르")}</th><th scope="col">{t("추천 수")}</th></tr></thead>
                   <tbody>
                     {result.items.map((game) => (
                       <tr id={`hot_game_item_${game.id}`} key={game.id}>
@@ -119,12 +121,12 @@ function HotGames() {
                           <button
                             type="button"
                             className="hot-game-link"
-                            aria-label={`${game.title} 상세 정보 보기`}
+                            aria-label={t("{{title}} 상세 정보 보기", { title: game.title })}
                             onClick={() => navigate(`/games/detail/${game.appId}`)}
                           >
                             <span className="hot-game-image">
                               {game.image ? <img src={game.image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null}
-                              <span>게임 이미지</span>
+                              <span>{t("게임 이미지")}</span>
                             </span>
                             <span className="hot-game-description">
                               <strong>{game.title}</strong>
@@ -134,8 +136,8 @@ function HotGames() {
                         </td>
                         <td className="hot-game-count">
                           {game.recommendationsTotal == null
-                            ? "정보 없음"
-                            : game.recommendationsTotal.toLocaleString("ko-KR")}
+                            ? t("정보 없음")
+                            : formatNumber(game.recommendationsTotal)}
                         </td>
                       </tr>
                     ))}
@@ -144,7 +146,7 @@ function HotGames() {
                 <nav
                   id="hot_game_pagination"
                   className="hot-game-pagination"
-                  aria-label="게임 목록 페이지"
+                  aria-label={t("게임 목록 페이지")}
                 >
                   <Pagination
                     currentPage={page}
@@ -153,7 +155,7 @@ function HotGames() {
                     groupNavigation
                   />
                 </nav>
-                <p className="hot-games-total" role="status">전체 {result.totalCount}개 · {page} / {totalPages} 페이지</p>
+                <p className="hot-games-total" role="status">{t("전체 {{count}}개 · {{page}} / {{pages}} 페이지", { count: formatNumber(result.totalCount), page, pages: totalPages })}</p>
               </>
             )}
           </div>

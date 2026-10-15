@@ -19,6 +19,7 @@ import PriceGames from "./pages/PriceGames";
 import Login from "./pages/Login";
 import SteamLoginComplete from "./pages/SteamLoginComplete";
 import Social from "./pages/Social";
+import Setting from "./pages/Setting";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           element={<GameDetail isExample />}
         />
         <Route path="/social" element={<Social />} />
+        <Route path="/setting" element={<Setting />} />
         <Route path="/library" element={<Library />} />
         <Route
           path="/"

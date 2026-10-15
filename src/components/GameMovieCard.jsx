@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
+import { useLanguage } from "../contexts/LanguageContext";
 
 function GameMovieCard({ movie, index, appId }) {
+  const { t } = useLanguage();
   const videoRef = useRef(null);
   const [started, setStarted] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const [error, setError] = useState("");
 
-  const title = movie.name || `게임 영상 ${index + 1}`;
+  const title = movie.name || t("게임 영상 {{number}}", { number: index + 1 });
   const videoUrl = movie.hlsH264;
 
   useEffect(() => {
@@ -67,7 +69,7 @@ function GameMovieCard({ movie, index, appId }) {
           type="button"
           className="game-movie-thumbnail"
           onClick={() => setStarted(true)}
-          aria-label={`${title} 재생`}
+          aria-label={t("{{title}} 재생", { title })}
         >
           {movie.thumbnail && !imageFailed ? (
             <img
@@ -78,7 +80,7 @@ function GameMovieCard({ movie, index, appId }) {
             />
           ) : (
             <span className="game-movie-placeholder">
-              미리보기 이미지 없음
+              {t("미리보기 이미지 없음")}
             </span>
           )}
 
@@ -101,14 +103,14 @@ function GameMovieCard({ movie, index, appId }) {
 
       {error && (
         <div className="game-movie-error" role="alert">
-          <p>{error}</p>
+          <p>{t(error)}</p>
           {appId && (
             <a
               href={`https://store.steampowered.com/app/${appId}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Steam 스토어에서 보기
+              {t("Steam 스토어에서 보기")}
             </a>
           )}
         </div>

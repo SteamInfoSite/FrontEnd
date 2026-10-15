@@ -166,14 +166,15 @@ body {
   align-items: center;
   justify-content: flex-start; /* 가운데 정렬 대신 왼쪽 정렬로 변경 */
 
-  gap: 14px; /* 아이콘과 글자 간격 */
+  gap: 10px; /* 아이콘과 글자 간격 */
 
-  padding: 0 16px; /* 왼쪽 여백 추가 */
+  padding: 0 8px;
 
   color: #ffffff;
 
   font-size: 16px;
   font-weight: 700;
+  white-space: nowrap;
 
   cursor: pointer;
   transition: all 0.2s ease;
@@ -347,6 +348,7 @@ body {
 }
 
 .game-list {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -357,7 +359,27 @@ body {
 
   max-width: 1400px;
   width: 100%;
+  height: 345px;
   padding: 25px 0;
+}
+
+.game-carousel-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  height: 235px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%) translateX(calc(var(--offset) * 462px));
+  opacity: 1;
+  transition: transform 0.45s ease, opacity 0.45s ease;
+}
+
+.game-carousel-item[data-hidden="true"] {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .game-card {
@@ -425,4 +447,27 @@ body {
 .carousel-button:hover {
   opacity: 0.8;
   transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-carousel-item,
+  .game-carousel-item .game-card {
+    transition: none;
+  }
+}
+
+.game-section-message {
+  min-height: 170px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+}
+
+.game-section-message button {
+  padding: 8px 16px;
+  border: 1px solid white;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
 }
