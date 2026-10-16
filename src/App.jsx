@@ -48,7 +48,6 @@ function App() {
           element={<GameDetail isExample />}
         />
         <Route path="/social" element={<Social />} />
-        <Route path="/setting" element={<Setting />} />
         <Route path="/library" element={<Library />} />
         <Route
           path="/"
@@ -64,7 +63,9 @@ function App() {
           path="/board/:id"
           element={<BoardDetail />}
         />
+        <Route path="/setting" element={<Setting />} />
       </Routes>
+      
     </BrowserRouter>
   );
 }
