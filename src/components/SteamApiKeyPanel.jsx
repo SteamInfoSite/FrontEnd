@@ -4,12 +4,14 @@ import {
   registerSteamApiKey,
 } from "../services/steamApiKeyService";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useAuth } from "../contexts/AuthContext";
 
 function SteamApiKeyPanel({
   children,
   description = "프로필과 친구 정보를 조회하려면 API 키를 등록해 주세요.",
 }) {
   const { t } = useLanguage();
+  const { accessToken } = useAuth();
   const [loadStatus, setLoadStatus] = useState("loading");
   const [usable, setUsable] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -24,7 +26,7 @@ function SteamApiKeyPanel({
     setLoadStatus("loading");
     setError("");
 
-    getSteamApiKeyStatus({ signal: controller.signal })
+    getSteamApiKeyStatus({ signal: controller.signal, accessToken })
       .then((data) => {
         if (controller.signal.aborted) return;
 
@@ -42,7 +44,7 @@ function SteamApiKeyPanel({
       controller.abort();
       submitRequest.current?.abort();
     };
-  }, [retry]);
+  }, [retry, accessToken]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -58,6 +60,7 @@ function SteamApiKeyPanel({
     try {
       const data = await registerSteamApiKey(apiKey, {
         signal: controller.signal,
+        accessToken,
       });
 
       if (controller.signal.aborted) return;

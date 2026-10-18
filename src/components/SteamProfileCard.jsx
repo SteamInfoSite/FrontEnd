@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getMySteamProfile } from "../services/socialService";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useAuth } from "../contexts/AuthContext";
 
 function SteamProfileCard() {
   const { t } = useLanguage();
+  const { accessToken } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +18,7 @@ function SteamProfileCard() {
     setLoading(true);
     setError("");
 
-    getMySteamProfile({ signal: controller.signal })
+    getMySteamProfile({ signal: controller.signal, accessToken })
       .then((data) => {
         if (controller.signal.aborted) return;
 
@@ -35,7 +37,7 @@ function SteamProfileCard() {
       });
 
     return () => controller.abort();
-  }, [retry]);
+  }, [retry, accessToken]);
 
   return (
     <section

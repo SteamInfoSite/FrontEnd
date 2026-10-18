@@ -21,7 +21,7 @@ const CATEGORY_VALUES = {
 function BoardWrite() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { loggedIn, status } = useAuth();
+  const { loggedIn, status, accessToken } = useAuth();
 
   const [category, setCategory] = useState("잡담");
   const [displayName, setDisplayName] = useState("");
@@ -42,7 +42,7 @@ function BoardWrite() {
 
     let active = true;
 
-    getMyDisplayName()
+    getMyDisplayName(accessToken)
       .then((data) => {
         if (active) setDisplayName(data.displayName);
       })
@@ -53,7 +53,7 @@ function BoardWrite() {
     return () => {
       active = false;
     };
-  }, [loggedIn]);
+  }, [loggedIn, accessToken]);
 
   function rememberSelection() {
     const editor = editorRef.current;
@@ -142,7 +142,7 @@ function BoardWrite() {
         category: CATEGORY_VALUES[category],
         title: title.trim(),
         contentHtml: cleanBoardContent(editor.innerHTML),
-      });
+      }, accessToken);
 
       navigate(`/board/${postId}`);
     } catch (requestError) {

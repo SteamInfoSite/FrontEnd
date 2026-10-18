@@ -1,7 +1,10 @@
-export async function getMySteamProfile({ signal } = {}) {
+export async function getMySteamProfile({ signal, accessToken } = {}) {
   const response = await fetch("/api/social/me", {
     method: "GET",
-    credentials: "include",
+    credentials: "omit",
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
     cache: "no-store",
     signal,
   });
@@ -22,10 +25,13 @@ export async function getMySteamProfile({ signal } = {}) {
   return response.json();
 }
 
-export async function getMySteamFriends({ signal } = {}) {
+export async function getMySteamFriends({ signal, accessToken } = {}) {
   const response = await fetch("/api/social/friends", {
     method: "GET",
-    credentials: "include",
+    credentials: "omit",
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
     cache: "no-store",
     signal,
   });

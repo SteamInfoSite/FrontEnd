@@ -36,7 +36,7 @@ function BoardDetail() {
   const { t, formatNumber } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { loggedIn, status: authStatus } = useAuth();
+  const { loggedIn, status: authStatus, accessToken } = useAuth();
   const [post, setPost] = useState(null);
   const [postLoading, setPostLoading] = useState(true);
   const [postError, setPostError] = useState(null);
@@ -70,6 +70,7 @@ function BoardDetail() {
     && typeof post?.likedByMe === "boolean";
 
   useEffect(() => {
+    if (authStatus === "loading") return;
     let active = true;
     setPost(null);
     setPostLoading(true);
@@ -89,7 +90,7 @@ function BoardDetail() {
       };
     }
 
-    getPost(id)
+    getPost(id, accessToken)
       .then((data) => {
         if (active) setPost(data);
       })
@@ -103,7 +104,7 @@ function BoardDetail() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, authStatus, accessToken]);
 
   useEffect(() => {
     if (!post || String(post.id) !== id) return;
@@ -131,7 +132,7 @@ function BoardDetail() {
   }, [id, post, commentPage]);
 
   async function handleCommentSubmit(content) {
-    await createComment(id, content);
+    await createComment(id, content, accessToken);
 
     // 댓글은 오래된 순서부터 나오므로 새 댓글이 있는 마지막 페이지로 이동합니다.
     const firstPage = await getComments(id, 1, COMMENT_PAGE_SIZE);
@@ -153,7 +154,7 @@ function BoardDetail() {
     setDeleteError("");
 
     try {
-      await deletePost(id);
+      await deletePost(id, accessToken);
       navigate("/board", { replace: true });
     } catch (error) {
       setDeleteError(
@@ -184,7 +185,7 @@ function BoardDetail() {
     setLikeMessage("");
 
     try {
-      const result = await likePost(id);
+      const result = await likePost(id, accessToken);
       setPost((current) => current && String(current.id) === id
         ? { ...current, likeCount: result.likeCount, likedByMe: result.likedByMe }
         : current);

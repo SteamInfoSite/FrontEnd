@@ -5,7 +5,7 @@ import { getMyDisplayName } from "../services/boardService";
 
 function CommentForm({ onCommentSubmit }) {
   const { t } = useLanguage();
-  const { loggedIn, status } = useAuth();
+  const { loggedIn, status, accessToken } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -19,7 +19,7 @@ function CommentForm({ onCommentSubmit }) {
 
     let active = true;
 
-    getMyDisplayName()
+    getMyDisplayName(accessToken)
       .then((data) => {
         if (active) setDisplayName(data.displayName);
       })
@@ -30,7 +30,7 @@ function CommentForm({ onCommentSubmit }) {
     return () => {
       active = false;
     };
-  }, [loggedIn]);
+  }, [loggedIn, accessToken]);
 
   async function handleSubmit() {
     if (!comment.trim() || submitting || !loggedIn) return;
