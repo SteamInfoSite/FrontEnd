@@ -144,22 +144,6 @@
   cursor: not-allowed;
 }
 
-.board-write-toolbar button:not(:disabled),
-.board-write-toolbar select:not(:disabled) {
-  color: #222222;
-  cursor: pointer;
-}
-
-.board-write-toolbar button[aria-pressed="true"] {
-  border-color: #8b45f5;
-  background: #eee3ff;
-  color: #6d28d9;
-}
-
-.board-write-toolbar button:not(:disabled):hover {
-  background: #eee3ff;
-}
-
 .board-write-tool-hint {
   margin-left: auto;
   color: #777777;
@@ -171,7 +155,6 @@
   width: 100%;
   min-height: 300px;
   padding: 14px;
-  overflow: auto;
   border: none;
   border-radius: 0;
   background: white;
@@ -179,30 +162,12 @@
   font-family: "Malgun Gothic", sans-serif;
   font-size: 16px;
   line-height: 1.7;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
   resize: vertical;
 }
 
-.board-write-body p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  color: #929292;
-  font-size: 13px;
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-
-.board-write-body img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 12px 0;
-  border-radius: 6px;
-}
-
 .board-write-title::placeholder,
-.board-write-nickname::placeholder {
+.board-write-nickname::placeholder,
+.board-write-body::placeholder {
   color: #929292;
   font-size: 13px;
 }
@@ -237,52 +202,61 @@
   cursor: pointer;
 }
 
-.board-write-cancel {
-  background: #737373;
-}
-
-.board-write-submit {
-  background: #8b45f5;
-}
-
-.board-write-cancel:hover {
-  background: #595959;
-}
-
-.board-write-submit:hover {
-  background: #7c3aed;
-}
-
-.board-write-actions button:disabled {
-  opacity: 0.55;
-  cursor: wait;
-}
+.board-write-cancel { background: #737373; }
+.board-write-submit { background: #8b45f5; }
+.board-write-cancel:hover { background: #595959; }
+.board-write-submit:hover { background: #7c3aed; }
 
 /* =========================
    Narrow Screens
 ========================= */
 @media (max-width: 1000px) {
-  .board-write-heading h1 {
-    font-size: 26px;
-  }
-
-  .board-write-heading {
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  .board-write-form {
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  .board-write-tool-hint {
-    flex-basis: 100%;
-    margin: 3px 0 0;
-  }
+  .board-write-heading h1 { font-size: 26px; }
+  .board-write-heading { padding-right: 0; padding-left: 0; }
+  .board-write-form { padding-right: 0; padding-left: 0; }
+  .board-write-tool-hint { flex-basis: 100%; margin: 3px 0 0; }
 }
 
-.board-write-body a {
-  color: #7c3aed;
-  text-decoration: underline;
+/* 활성 서식 도구 */
+.board-write-toolbar button:not(:disabled),
+.board-write-toolbar select:not(:disabled) {
+  color: #222222;
+  cursor: pointer;
+}
+
+.board-write-toolbar button[aria-pressed="true"] {
+  border-color: #8b45f5;
+  background: #eee3ff;
+  color: #6d28d9;
+}
+
+.board-write-toolbar button:not(:disabled):hover {
+  background: #eee3ff;
+}
+
+.board-write-body {
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.board-write-body:empty::before {
+  content: attr(data-placeholder);
+  color: #929292;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* 첨부 사진 */
+.board-write-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0;
+  border-radius: 6px;
+}
+
+.board-write-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }

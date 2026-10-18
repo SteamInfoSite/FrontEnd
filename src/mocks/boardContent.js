@@ -47,7 +47,7 @@ export function cleanBoardContent(html) {
     }
     if (node.tagName === "A") {
       const href = node.getAttribute("href") || "";
-      if (/^https:\/\//i.test(href)) {
+      if (/^https?:\/\//i.test(href)) {
         element.setAttribute("href", href);
         element.setAttribute("target", "_blank");
         element.setAttribute("rel", "noopener noreferrer");

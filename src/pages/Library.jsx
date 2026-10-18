@@ -132,7 +132,7 @@ function LibraryGameCard({ game }) {
   );
 }
 
-function LibraryContent() {
+function LibraryContent({ accessToken }) {
   const { language, t, formatNumber } = useLanguage();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -148,7 +148,7 @@ function LibraryContent() {
     setLoading(true);
     setError(null);
 
-    getMyLibrary({ signal: controller.signal })
+    getMyLibrary({ signal: controller.signal, accessToken })
       .then((result) => {
         if (controller.signal.aborted) return;
 
@@ -173,7 +173,7 @@ function LibraryContent() {
       });
 
     return () => controller.abort();
-  }, [retry]);
+  }, [retry, accessToken]);
 
   useEffect(() => {
     if (retryAt <= Date.now()) return;
@@ -295,7 +295,7 @@ function LibraryContent() {
 function Library() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { loggedIn, status, steamId, refreshAuth } = useAuth();
+  const { loggedIn, status, steamId, accessToken, refreshAuth } = useAuth();
 
   return (
     <div className="social-page library-page">
@@ -334,7 +334,7 @@ function Library() {
               key={steamId}
               description="보유 게임과 플레이 기록을 조회하려면 API 키를 등록해 주세요."
             >
-              <LibraryContent />
+              <LibraryContent accessToken={accessToken} />
             </SteamApiKeyPanel>
           ) : (
             <section className="social-login-notice">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMySteamFriends } from "../services/socialService";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const stateLabels = {
   0: "오프라인",
@@ -118,6 +119,7 @@ function FriendAvatar({ friend }) {
 
 function SteamFriendsList() {
   const { language, t, formatNumber } = useLanguage();
+  const { accessToken } = useAuth();
   const [friends, setFriends] = useState([]);
   const [checkedAt, setCheckedAt] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -133,7 +135,7 @@ function SteamFriendsList() {
     setLoading(true);
     setError(null);
 
-    getMySteamFriends({ signal: controller.signal })
+    getMySteamFriends({ signal: controller.signal, accessToken })
       .then((data) => {
         if (controller.signal.aborted) return;
 
@@ -159,7 +161,7 @@ function SteamFriendsList() {
       });
 
     return () => controller.abort();
-  }, [retry]);
+  }, [retry, accessToken]);
 
   useEffect(() => {
     if (retryAt <= Date.now()) return;

@@ -16,12 +16,15 @@ function createApiKeyError(status, fallbackMessage) {
 }
 
 //현재 로그인한 사용자의 API 키 등록 상태 조회
-export async function getSteamApiKeyStatus({ signal } = {}) {
+export async function getSteamApiKeyStatus({ signal, accessToken } = {}) {
   const response = await fetch(API_KEY_URL, {
     method: "GET",
-    credentials: "include",
+    credentials: "omit",
     cache: "no-store",
     signal,
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
   });
 
   if (!response.ok) {
@@ -37,7 +40,7 @@ export async function getSteamApiKeyStatus({ signal } = {}) {
 //입력한 API 키를 백엔드에서 검증하고 암호화하여 저장
 export async function registerSteamApiKey(
   steamApiKey,
-  { signal } = {}
+  { signal, accessToken } = {}
 ) {
   const trimmedKey =
     typeof steamApiKey === "string" ? steamApiKey.trim() : "";
@@ -50,9 +53,10 @@ export async function registerSteamApiKey(
 
   const response = await fetch(API_KEY_URL, {
     method: "PUT",
-    credentials: "include",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     },
     body: JSON.stringify({
       steamApiKey: trimmedKey,

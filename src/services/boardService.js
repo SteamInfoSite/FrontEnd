@@ -1,18 +1,13 @@
-async function request(path, { json, ...options } = {}) {
-  const method = (options.method || "GET").toUpperCase();
-  let headers = json === undefined
-    ? { ...options.headers }
-    : { "Content-Type": "application/json", ...options.headers };
-
-  if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
-    const csrfResponse = await request("/csrf");
-    const { token, headerName } = await csrfResponse.json();
-    headers = { ...headers, [headerName]: token };
-  }
+async function request(path, { json, accessToken, ...options } = {}) {
+  const headers = {
+    ...(json === undefined ? {} : { "Content-Type": "application/json" }),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...options.headers,
+  };
 
   const response = await fetch(`/api/community${path}`, {
     ...options,
-    credentials: "include",
+    credentials: "omit",
     headers,
     body: json === undefined ? undefined : JSON.stringify(json),
   });
@@ -42,41 +37,51 @@ export async function getPosts(page = 1, size = 20) {
 // 개발 모드 StrictMode에서 같은 상세 요청이 겹치면 한 번만 보냅니다.
 const pendingDetails = new Map();
 
-export function getPost(postId) {
-  const key = String(postId);
+export function getPost(postId, accessToken) {
+  const key = `${postId}:${accessToken ?? ""}`;
+
   if (!pendingDetails.has(key)) {
-    const pending = request(`/posts/${encodeURIComponent(key)}`)
+    const pending = request(
+      `/posts/${encodeURIComponent(postId)}`,
+      { accessToken }
+    )
       .then((response) => response.json())
       .finally(() => pendingDetails.delete(key));
 
     pendingDetails.set(key, pending);
   }
+
   return pendingDetails.get(key);
 }
 
-export async function createPost({ category, title, contentHtml }) {
+export async function createPost(
+  { category, title, contentHtml },
+  accessToken
+) {
   const response = await request("/posts", {
     method: "POST",
+    accessToken,
     json: { category, title, contentHtml },
   });
 
-  // 백엔드는 게시글 JSON 대신 Location 헤더를 반환합니다.
   const location = response.headers.get("Location");
   const postId = location?.match(/\/posts\/(\d+)$/)?.[1];
   if (!postId) throw new Error("새 게시글 번호를 확인하지 못했습니다.");
   return postId;
 }
 
-export async function deletePost(postId) {
+export async function deletePost(postId, accessToken) {
   await request(`/posts/${encodeURIComponent(postId)}`, {
     method: "DELETE",
+    accessToken,
   });
 }
 
-export async function likePost(postId) {
-  const response = await request(`/posts/${encodeURIComponent(postId)}/likes`, {
-    method: "POST",
-  });
+export async function likePost(postId, accessToken) {
+  const response = await request(
+    `/posts/${encodeURIComponent(postId)}/likes`,
+    { method: "POST", accessToken }
+  );
   return response.json();
 }
 
@@ -87,14 +92,15 @@ export async function getComments(postId, page = 1, size = 20) {
   return response.json();
 }
 
-export async function createComment(postId, content) {
+export async function createComment(postId, content, accessToken) {
   await request(`/posts/${postId}/comments`, {
     method: "POST",
+    accessToken,
     json: { content },
   });
 }
 
-export async function getMyDisplayName() {
-  const response = await request("/me/display-name");
+export async function getMyDisplayName(accessToken) {
+  const response = await request("/me/display-name", { accessToken });
   return response.json();
 }

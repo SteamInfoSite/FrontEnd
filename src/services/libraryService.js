@@ -1,7 +1,10 @@
-export async function getMyLibrary({ signal } = {}) {
+export async function getMyLibrary({ signal, accessToken } = {}) {
   const response = await fetch("/api/library/me", {
     method: "GET",
-    credentials: "include",
+    credentials: "omit",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
     cache: "no-store",
     signal,
   });
