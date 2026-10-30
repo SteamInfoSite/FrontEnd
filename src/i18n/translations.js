@@ -264,6 +264,10 @@ export const translations = {
     "장르별 게임 목록을 불러오지 못했습니다.": "Could not load games by genre.",
     "할인 게임 목록을 불러오지 못했습니다.": "Could not load discounted games.",
     "장르 목록을 불러오지 못했습니다": "Could not load genres.",
+    "페이지를 찾을 수 없습니다.": "Page not found.",
+    "주소를 다시 확인하거나 이전 페이지로 돌아가 주세요.":
+    "Check the address or go back to the previous page.",
+    "이전 페이지로 돌아가기": "Go back",
   },
   ja: {
     Home: "ホーム", Game: "ゲーム", Library: "ライブラリ", Social: "ソーシャル",
@@ -521,5 +525,9 @@ export const translations = {
     "장르별 게임 목록을 불러오지 못했습니다.": "ジャンル別ゲーム一覧を読み込めませんでした。",
     "할인 게임 목록을 불러오지 못했습니다.": "セール中のゲーム一覧を読み込めませんでした。",
     "장르 목록을 불러오지 못했습니다": "ジャンル一覧を読み込めませんでした。",
+    "페이지를 찾을 수 없습니다.": "ページが見つかりません。",
+    "주소를 다시 확인하거나 이전 페이지로 돌아가 주세요.":
+    "URLを確認するか、前のページに戻ってください。",
+    "이전 페이지로 돌아가기": "前のページに戻る",
   },
 };

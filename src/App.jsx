@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import Library from "./pages/Library";
+import NotFound from "./pages/NotFound";
 
 import Home from "./pages/Home";
 import Board from "./pages/Board";
@@ -62,8 +63,9 @@ function App() {
 
         <Route
           path="/board/:id"
-          element={<BoardDetail />}
+          element={<BoardDetail />} 
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

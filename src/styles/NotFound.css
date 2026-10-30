@@ -1,0 +1,112 @@
+.not-found-page {
+  display: flex;
+  min-height: 100vh;
+  background: #fff;
+  color: #191b22;
+}
+
+.not-found-main-area {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.not-found-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 165px);
+  margin: 0 40px;
+  padding: 48px 20px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.not-found-message {
+  max-width: 560px;
+}
+
+.not-found-code {
+  margin: 0 0 12px;
+  color: #8b45f5;
+  font-size: 80px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.not-found-message h1 {
+  margin: 0 0 14px;
+  font-size: 32px;
+}
+
+.not-found-message > p:not(.not-found-code) {
+  margin: 0;
+  color: #777;
+  line-height: 1.6;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.not-found-actions button,
+.not-found-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.not-found-actions button {
+  border: 0;
+  background: #8b45f5;
+  color: #fff;
+}
+
+.not-found-actions a {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #191b22;
+}
+
+.not-found-actions button:hover {
+  background: #7734dc;
+}
+
+.not-found-actions a:hover {
+  background: #f8f6fc;
+}
+
+.not-found-actions button:focus-visible,
+.not-found-actions a:focus-visible {
+  outline: 3px solid #b99aff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .not-found-content {
+    margin: 0 20px;
+  }
+
+  .not-found-code {
+    font-size: 64px;
+  }
+
+  .not-found-message h1 {
+    font-size: 26px;
+  }
+
+  .not-found-actions {
+    flex-direction: column;
+  }
+}
