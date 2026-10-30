@@ -75,11 +75,7 @@ function Social() {
                 >
                   {t("Steam으로 로그인")}
                 </button>
-              </div>
-
-              <p className="social-login-footer">
-                {t("내 프로필과 친구 목록은 로그인 및 API 키 등록 후 표시됩니다.")}
-              </p>
+              </div> 
             </section>
           )}
         </main>
