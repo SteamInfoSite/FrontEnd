@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -7,6 +7,13 @@ import { useLanguage } from "../contexts/LanguageContext";
 function Header() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentQ = new URLSearchParams(location.search).get("q") || "";
+  const [searchTerm, setSearchTerm] = useState(currentQ);
+
+  useEffect(() => {
+    setSearchTerm(currentQ);
+  }, [currentQ]);
 
   const {
     loggedIn,
@@ -39,15 +46,23 @@ function Header() {
 
   return (
     <header id="site_header" className="header">
-      <div className="search-area">
-        <span>{t("Search")}:</span>
-
+      <form
+        className="search-area"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const q = searchTerm.trim();
+          if (q) navigate(`/games/search?${new URLSearchParams({ q })}`);
+        }}
+      >
+        <label htmlFor="game_search_input">{t("Search")}:</label>
         <input
           id="game_search_input"
-          type="text"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
           placeholder={t("게임 검색")}
         />
-      </div>
+        <button type="submit">{t("Search")}</button>
+      </form>
 
       <div className="auth-buttons">
         {status === "loading" ? (

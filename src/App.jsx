@@ -21,6 +21,7 @@ import Login from "./pages/Login";
 import SteamLoginComplete from "./pages/SteamLoginComplete";
 import Social from "./pages/Social";
 import Setting from "./pages/Setting";
+import SearchGames from "./pages/SearchGames";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/games/free" element={<PriceGames mode="free" />} />
         <Route path="/games/discount" element={<PriceGames mode="discount" />} />
         <Route path="/games/genre" element={<GenreGames />} />
+        <Route path="/games/search" element={<SearchGames />} />
         <Route
           path="/games/detail/:appId"
           element={<GameDetail />}
