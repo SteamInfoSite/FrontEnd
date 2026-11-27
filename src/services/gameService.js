@@ -374,3 +374,44 @@ export async function getGameGenres({ signal } = {}) {
 
   return response.json();
 }
+
+export async function getSearchGames({
+  q,
+  page = 1,
+  pageSize = 10,
+  signal,
+} = {}) {
+  const params = new URLSearchParams({
+    q,
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+
+  const response = await fetch(`/api/games/search?${params}`, {
+    method: "GET",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("게임 검색 결과를 불러오지 못했습니다.");
+  }
+
+  const data = await response.json();
+
+  return {
+    items: data.items.map((game, index) => ({
+      id: game.appId,
+      appId: game.appId,
+      title: game.gameName,
+      image: game.headerImage || game.capsuleImage || null,
+      genres: game.genres || [],
+      platforms: game.platforms || {},
+      recommendationsTotal: game.recommendationsTotal ?? null,
+      isFree: game.isFree,
+      comingSoon: game.comingSoon,
+      price: game.price ?? null,
+      rank: (data.page - 1) * data.pageSize + index + 1,
+    })),
+    totalCount: data.totalCount,
+  };
+}

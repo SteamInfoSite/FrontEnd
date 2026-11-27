@@ -234,7 +234,7 @@ body {
   gap: 15px;
 }
 
-.search-area span {
+.search-area label {
   flex-shrink: 0;
   font-size: 24px;
 }
