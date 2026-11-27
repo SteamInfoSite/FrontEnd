@@ -14,10 +14,15 @@ function SearchGames() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const q = (params.get("q") || "").trim();
+  const requestedSort = params.get("sort");
+  const sort = ["recommendations_desc", "released_desc", "title_asc"]
+    .includes(requestedSort)
+    ? requestedSort
+    : "recommendations_desc";
   const requestedPage = Number(params.get("page"));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0
     ? requestedPage : 1;
-  const key = JSON.stringify([q, page]);
+  const key = JSON.stringify([q, sort, page]);
   const [result, setResult] = useState({
     key: "", status: "loading", items: [], totalCount: 0,
   });
@@ -31,7 +36,7 @@ function SearchGames() {
     const controller = new AbortController();
     setResult({ key, status: "loading", items: [], totalCount: 0 });
 
-    getSearchGames({ q, page, pageSize: PAGE_SIZE, signal: controller.signal })
+    getSearchGames({ q, sort, page, pageSize: PAGE_SIZE, signal: controller.signal })
       .then((data) => {
         if (controller.signal.aborted) return;
         const lastPage = Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE));
@@ -52,13 +57,20 @@ function SearchGames() {
       });
 
     return () => controller.abort();
-  }, [q, page, key, retry, setParams]);
+  }, [q, sort, page, key, retry, setParams]);
 
   const changePage = (nextPage) => {
     const next = new URLSearchParams(params);
     next.set("page", String(nextPage));
     setParams(next);
   };
+
+const changeSort = (nextSort) => {
+  const next = new URLSearchParams(params);
+  next.set("sort", nextSort);
+  next.delete("page");
+  setParams(next);
+};
 
   return (
     <div className="hot-games-page">
@@ -68,6 +80,18 @@ function SearchGames() {
         <main className="hot-games-content">
           <div className="hot-games-heading">
             <div><h1>{t("Search")}</h1><p>{q}</p></div>
+          </div>
+          <div className="hot-games-filters">
+            <label htmlFor="search_sort_select">{t("정렬")}</label>
+            <select
+              id="search_sort_select"
+              value={sort}
+              onChange={(event) => changeSort(event.target.value)}
+            >
+              <option value="recommendations_desc">{t("추천 수 높은 순")}</option>
+              <option value="released_desc">{t("최신 출시 순")}</option>
+              <option value="title_asc">{t("이름순")}</option>
+            </select>
           </div>
           <div className="hot-games-results" aria-busy={status === "loading"}>
             {status === "idle" && <p className="hot-games-state">{t("게임 검색")}</p>}

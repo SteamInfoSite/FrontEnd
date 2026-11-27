@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { Search } from "lucide-react";
+import { getGameSuggestions } from "../services/gameService";
 
 //로그인 안내 페이지로 보냄
 function Header() {
@@ -14,6 +16,36 @@ function Header() {
   useEffect(() => {
     setSearchTerm(currentQ);
   }, [currentQ]);
+
+const [suggestions, setSuggestions] = useState([]);
+const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+const [activeIndex, setActiveIndex] = useState(-1);
+
+useEffect(() => {
+  const keyword = searchTerm.trim();
+  setSuggestions([]);
+  setActiveIndex(-1);
+
+  if (!suggestionsOpen || keyword.length < 2) return;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    getGameSuggestions({ q: keyword, signal: controller.signal })
+      .then((items) => {
+        if (!controller.signal.aborted) {
+          setSuggestions(Array.isArray(items) ? items : []);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setSuggestions([]);
+      });
+  }, 300);
+
+  return () => {
+    clearTimeout(timer);
+    controller.abort();
+  };
+}, [searchTerm, suggestionsOpen]);
 
   const {
     loggedIn,
@@ -44,6 +76,8 @@ function Header() {
     }
   }
 
+const showSuggestions = suggestionsOpen && suggestions.length > 0;
+
   return (
     <header id="site_header" className="header">
       <form
@@ -51,17 +85,93 @@ function Header() {
         onSubmit={(event) => {
           event.preventDefault();
           const q = searchTerm.trim();
+          setSuggestionsOpen(false);
+          setActiveIndex(-1);
           if (q) navigate(`/games/search?${new URLSearchParams({ q })}`);
         }}
       >
-        <label htmlFor="game_search_input">{t("Search")}:</label>
-        <input
-          id="game_search_input"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          placeholder={t("게임 검색")}
-        />
-        <button type="submit">{t("Search")}</button>
+        <div
+          className="search-field"
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setSuggestionsOpen(false);
+              setActiveIndex(-1);
+            }
+          }}
+        >
+          <input
+            id="game_search_input"
+            type="search"
+            value={searchTerm}
+            onFocus={() => setSuggestionsOpen(true)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setSuggestionsOpen(true);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                setSuggestionsOpen(false);
+                setActiveIndex(-1);
+              } else if (
+                suggestionsOpen && suggestions.length > 0 &&
+                (event.key === "ArrowDown" || event.key === "ArrowUp")
+              ) {
+                event.preventDefault();
+                setActiveIndex((index) => event.key === "ArrowDown"
+                  ? (index + 1) % suggestions.length
+                  : index <= 0 ? suggestions.length - 1 : index - 1);
+              } else if (
+                event.key === "Enter" && suggestionsOpen && activeIndex >= 0
+              ) {
+                event.preventDefault();
+                setSuggestionsOpen(false);
+                navigate(`/games/detail/${suggestions[activeIndex].appId}`);
+              }
+            }}
+            placeholder={t("게임 검색")}
+            aria-label={t("게임 검색")}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showSuggestions}
+            aria-controls={showSuggestions ? "game-search-suggestions" : undefined}
+            aria-activedescendant={
+              showSuggestions && activeIndex >= 0
+                ? `game-search-option-${activeIndex}` : undefined
+            }
+            maxLength={100}
+          />
+          <button className="search-submit" type="submit"
+            aria-label={t("Search")} title={t("Search")}>
+            <Search size={20} aria-hidden="true" />
+          </button>
+
+          {showSuggestions && (
+            <div id="game-search-suggestions"
+              className="search-suggestions" role="listbox"
+              aria-label={t("게임 검색")}>
+              {suggestions.map((item, index) => (
+                <button
+                  key={item.appId}
+                  id={`game-search-option-${index}`}
+                  className={`search-suggestion ${activeIndex === index ? "active" : ""}`}
+                  type="button"
+                  role="option"
+                  aria-selected={activeIndex === index}
+                  onClick={() => {
+                    setSuggestionsOpen(false);
+                    navigate(`/games/detail/${item.appId}`);
+                  }}
+                >
+                  <span className="suggestion-image">
+                    {item.image && <img src={item.image} alt="" />}
+                  </span>
+                  <span className="suggestion-title">{item.gameName}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </form>
 
       <div className="auth-buttons">

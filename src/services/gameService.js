@@ -288,7 +288,6 @@ export async function getGenreGames({
       pageSize: String(pageSize),
     });
 
-    //이 요청 부분이 빠져 있었어
     const response = await fetch(`/api/games/by-genre?${params}`, {
       method: "GET",
       signal,
@@ -377,12 +376,14 @@ export async function getGameGenres({ signal } = {}) {
 
 export async function getSearchGames({
   q,
+  sort = "recommendations_desc",
   page = 1,
   pageSize = 10,
   signal,
 } = {}) {
   const params = new URLSearchParams({
     q,
+    sort,
     page: String(page),
     pageSize: String(pageSize),
   });
@@ -414,4 +415,20 @@ export async function getSearchGames({
     })),
     totalCount: data.totalCount,
   };
+}
+export async function getGameSuggestions({ q, signal } = {}) {
+  const keyword = q?.trim() || "";
+  if (keyword.length < 2) return [];
+
+  const params = new URLSearchParams({ q: keyword });
+  const response = await fetch(`/api/games/suggestions?${params}`, {
+    method: "GET",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("게임 검색 후보를 불러오지 못했습니다.");
+  }
+
+  return response.json();
 }

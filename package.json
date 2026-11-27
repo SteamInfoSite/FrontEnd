@@ -20,6 +20,7 @@
     "@tiptap/react": "^3.32.0",
     "@tiptap/starter-kit": "^3.32.0",
     "hls.js": "^1.7.3",
+    "lucide-react": "^1.81.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3"
